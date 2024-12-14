@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crud_empresa/produto/produto_repository.dart';
-import 'package:crud_empresa/produto/produto_service.dart';
+import 'package:template_crud_produto/produto/produto_repository.dart';
+import 'package:template_crud_produto/produto/produto_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crud_empresa/produto/produto_list_widget.dart';
+import 'package:template_crud_produto/produto/produto_list_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 

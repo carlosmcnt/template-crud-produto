@@ -1,6 +1,6 @@
 {
-    "name": "crud_empresa",
-    "short_name": "crud_empresa",
+    "name": "template_crud_produto",
+    "short_name": "template_crud_produto",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

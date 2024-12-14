@@ -1,4 +1,4 @@
-import 'package:crud_empresa/produto/produto.dart';
+import 'package:template_crud_produto/produto/produto.dart';
 import 'produto_repository.dart';
 
 class ProdutoService {

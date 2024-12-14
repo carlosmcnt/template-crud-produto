@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crud_empresa/produto/produto.dart';
+import 'package:template_crud_produto/produto/produto.dart';
 
 class ProdutoRepository {
   
