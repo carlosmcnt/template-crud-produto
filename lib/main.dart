@@ -1,26 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:template_crud_produto/produto/produto_repository.dart';
-import 'package:template_crud_produto/produto/produto_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/produto/produto_list_widget.dart';
+import 'package:template_crud_produto/produto/widgets/produto_list_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'produto/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  final firebaseFirestore = FirebaseFirestore.instance;
-  final produtoRepository = ProdutoRepository(firebaseFirestore);
-  final produtoService = ProdutoService(produtoRepository: produtoRepository);
-
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MaterialApp(
-        home: ProdutoListPage(produtoService: produtoService),
+        home: ProdutoListPage(),
       ),
     ),
   );

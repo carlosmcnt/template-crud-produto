@@ -7,10 +7,10 @@ class Produto {
   final double valorUnitario;
   final String tipo;
   final String sabor;
-  final DateTime dataCadastro;
+  final String dataCadastro;
   final bool temGlutem;
   final bool temLactose;
-  final DateTime dataUltimaAlteracao;
+  final String dataUltimaAlteracao;
 
   Produto({this.id, required this.descricao, required this.valorUnitario, required this.tipo, required this.sabor, required this.dataCadastro, this.temGlutem = false, this.temLactose = false, required this.dataUltimaAlteracao});
 
@@ -22,10 +22,10 @@ class Produto {
       valorUnitario: (data['valorUnitario'] ?? 0.0).toDouble(),
       tipo: data['tipo'] ?? '',
       sabor: data['sabor'] ?? '',
-      dataCadastro: DateTime.parse(data['dataCadastro'] ?? DateTime.now().toLocal()),
+      dataCadastro: DateTime.parse(data['dataCadastro']).toString(),
       temGlutem: data['temGlutem'] ?? false,
       temLactose: data['temLactose'] ?? false,
-      dataUltimaAlteracao: DateTime.parse(data['dataUltimaAlteracao'] ?? DateTime.now().toLocal()),
+      dataUltimaAlteracao: DateTime.parse(data['dataUltimaAlteracao']).toString(),
     );
   }
 
@@ -35,10 +35,10 @@ class Produto {
       'valorUnitario': valorUnitario,
       'tipo': tipo,
       'sabor': sabor,
-      'dataCadastro': dataCadastro.toLocal(),
+      'dataCadastro': dataCadastro,
       'temGlutem': temGlutem,
       'temLactose': temLactose,
-      'dataUltimaAlteracao': dataUltimaAlteracao.toLocal(),
+      'dataUltimaAlteracao': dataUltimaAlteracao,
     };
   }
 
@@ -48,10 +48,10 @@ class Produto {
     double? valorUnitario,
     String? tipo,
     String? sabor,
-    DateTime? dataCadastro,
+    String? dataCadastro,
     bool? temGlutem,
     bool? temLactose,
-    DateTime? dataUltimaAlteracao,
+    String? dataUltimaAlteracao,
   }) {
     return Produto(
       id: id ?? this.id,

@@ -1,5 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/produto/produto.dart';
 import 'produto_repository.dart';
+
+part 'produto_service.g.dart';
 
 class ProdutoService {
   
@@ -11,8 +15,8 @@ class ProdutoService {
     return await produtoRepository.getProdutoPorId(id);
   }
 
-  Stream<List<Produto>> getProdutos() {
-    return produtoRepository.getProdutos();
+  Future<List<Produto>> getProdutos() async{
+    return await produtoRepository.getProdutos().first;
   }
 
   Future<Produto> criarProduto(Produto produto) async {
@@ -27,4 +31,10 @@ class ProdutoService {
     await produtoRepository.deletarProduto(id);
   }
 
+}
+
+@Riverpod(keepAlive: true)
+ProdutoService produtoService(Ref ref) {
+  final repository = ref.watch(produtoRepositoryProvider);
+  return ProdutoService(produtoRepository: repository);
 }

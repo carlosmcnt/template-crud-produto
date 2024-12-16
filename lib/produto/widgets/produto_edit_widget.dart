@@ -1,83 +1,76 @@
 import 'package:flutter/material.dart';
-import 'produto.dart';
-import 'produto_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
+import 'package:template_crud_produto/produto/produto.dart';
 
-class ProdutoEditPage extends StatefulWidget {
+class ProdutoEditPage extends ConsumerStatefulWidget {
   final Produto produto;
-  final ProdutoService produtoService;
 
-  const ProdutoEditPage({super.key, required this.produto, required this.produtoService});
-
+  const ProdutoEditPage({super.key, required this.produto});
+  
   @override
-  State<ProdutoEditPage> createState() => ProdutoEditPageState();
+  ConsumerState<ProdutoEditPage> createState() {
+    return _ProdutoEditPageState();
+  }
 }
 
-class ProdutoEditPageState extends State<ProdutoEditPage> {
-  final _formKey = GlobalKey<FormState>();
+class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
+
   late TextEditingController _descricaoController;
-  late TextEditingController _valorUnitarioController;
+  late TextEditingController _valorController;
   late TextEditingController _tipoController;
   late TextEditingController _saborController;
-  bool _temGlutem = false;
+
   bool _temLactose = false;
+  bool _temGlutem = false;
+  Produto get produto => widget.produto;
+
+  final NumberFormat currencyFormat = NumberFormat.currency(
+    locale: 'pt_BR',
+    symbol: 'R\$',
+  );
+
+  double moedaParser(String value) {
+    String normalized = value.replaceAll(currencyFormat.currencySymbol, '').trim();
+    normalized = normalized.replaceAll('.', '').replaceAll(',', '.');
+    return double.tryParse(normalized) ?? 0.0;
+  }
 
   @override
   void initState() {
     super.initState();
-    _descricaoController = TextEditingController(text: widget.produto.descricao);
-    _valorUnitarioController = TextEditingController(
+    _descricaoController = TextEditingController(text: produto.descricao);
+    _valorController = TextEditingController(
       text: widget.produto.valorUnitario > 0
-          ? widget.produto.valorUnitario.toString()
+          ? currencyFormat.format(widget.produto.valorUnitario).replaceAll(currencyFormat.currencySymbol, '')
           : '',
     );
-    _tipoController = TextEditingController(text: widget.produto.tipo);
-    _saborController = TextEditingController(text: widget.produto.sabor);
-    _temGlutem = widget.produto.temGlutem;
-    _temLactose = widget.produto.temLactose;
+    _tipoController = TextEditingController(text: produto.tipo);
+    _saborController = TextEditingController(text: produto.sabor);
+
+    _temLactose = produto.temLactose;
+    _temGlutem = produto.temGlutem;
   }
 
   @override
   void dispose() {
     _descricaoController.dispose();
-    _valorUnitarioController.dispose();
+    _valorController.dispose();
     _tipoController.dispose();
     _saborController.dispose();
     super.dispose();
-  }
-
-  Future<void> saveProduto() async {
-    if (_formKey.currentState!.validate()) {
-      final produto = widget.produto.copyWith(
-        descricao: _descricaoController.text,
-        valorUnitario: double.tryParse(_valorUnitarioController.text) ?? 0.0,
-        tipo: _tipoController.text,
-        sabor: _saborController.text,
-        temGlutem: _temGlutem,
-        temLactose: _temLactose,
-        dataUltimaAlteracao: DateTime.now(),
-      );
-
-      if (produto.id == null) {
-        await widget.produtoService.criarProduto(produto);
-      } else {
-        await widget.produtoService.atualizarProduto(produto);
-      }
-
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(true);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.produto.id == null ? 'Novo Produto' : 'Editar Produto'),
+        title: Text(produto.id == null ? 'Novo Produto' : 'Editar Produto'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
           child: ListView(
             children: [
               TextFormField(
@@ -91,7 +84,7 @@ class ProdutoEditPageState extends State<ProdutoEditPage> {
                 },
               ),
               TextFormField(
-                controller: _valorUnitarioController,
+                controller: _valorController,
                 decoration: const InputDecoration(
                   labelText: 'Valor Unitário',
                   prefixText: 'R\$ ',
@@ -129,7 +122,7 @@ class ProdutoEditPageState extends State<ProdutoEditPage> {
               ),
               SwitchListTile(
                 title: const Text('Contém Glúten'),
-                value: _temGlutem,
+                value:  _temGlutem,
                 onChanged: (value) {
                   setState(() {
                     _temGlutem = value;
@@ -147,8 +140,25 @@ class ProdutoEditPageState extends State<ProdutoEditPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: saveProduto,
-                child: const Text('Salvar'),
+                onPressed: () async {
+                  
+                  final novoProduto = produto.copyWith(
+                    descricao: _descricaoController.text,
+                    valorUnitario: moedaParser(_valorController.text),
+                    tipo: _tipoController.text,
+                    sabor: _saborController.text,
+                    temGlutem: _temGlutem,
+                    temLactose: _temLactose,
+                  );
+
+                  await ref
+                      .read(produtoListControllerProvider.notifier)
+                      .inserirOuAtualizarProduto(novoProduto);
+                  if (context.mounted) {
+                    Navigator.of(context).pop(true);
+                  }
+                },
+                child: Text(produto.id == null ? 'Criar' : 'Salvar'),
               ),
             ],
           ),
@@ -156,4 +166,5 @@ class ProdutoEditPageState extends State<ProdutoEditPage> {
       ),
     );
   }
+
 }
