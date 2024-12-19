@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:template_crud_produto/produto/produto.dart';
-import 'produto_repository.dart';
+import 'package:template_crud_produto/produto/models/produto.dart';
+import '../repositories/produto_repository.dart';
 
 part 'produto_service.g.dart';
 

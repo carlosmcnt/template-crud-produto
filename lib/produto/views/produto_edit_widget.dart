@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
-import 'package:template_crud_produto/produto/produto.dart';
+import 'package:template_crud_produto/produto/models/produto.dart';
 
 class ProdutoEditPage extends ConsumerStatefulWidget {
   final Produto produto;

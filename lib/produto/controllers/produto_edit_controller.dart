@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:template_crud_produto/produto/produto.dart';
-import 'package:template_crud_produto/produto/produto_service.dart';
+import 'package:template_crud_produto/produto/models/produto.dart';
+import 'package:template_crud_produto/produto/services/produto_service.dart';
 
 part 'produto_edit_controller.g.dart';
 

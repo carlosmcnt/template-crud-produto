@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:template_crud_produto/produto/produto.dart';
-import 'package:template_crud_produto/produto/firebase/firebase.dart';
+import 'package:template_crud_produto/produto/models/produto.dart';
+import 'package:template_crud_produto/firebase/firebase.dart';
 
 part 'produto_repository.g.dart';
 
