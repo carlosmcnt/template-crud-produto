@@ -11,19 +11,23 @@ class ProdutoEditPage extends ConsumerStatefulWidget {
   
   @override
   ConsumerState<ProdutoEditPage> createState() {
-    return _ProdutoEditPageState();
+    return ProdutoEditPageState();
   }
 }
 
-class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
+class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
 
   late TextEditingController _descricaoController;
   late TextEditingController _valorController;
   late TextEditingController _tipoController;
   late TextEditingController _saborController;
+  late TextEditingController _alergenosController;
+  List<String> _alergenos = [];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _temLactose = false;
   bool _temGlutem = false;
+  bool _vegano = false;
   Produto get produto => widget.produto;
 
   final NumberFormat currencyFormat = NumberFormat.currency(
@@ -48,9 +52,12 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
     );
     _tipoController = TextEditingController(text: produto.tipo);
     _saborController = TextEditingController(text: produto.sabor);
+    _alergenosController = TextEditingController();
 
     _temLactose = produto.temLactose;
     _temGlutem = produto.temGlutem;
+    _vegano = produto.vegano;
+    _alergenos = List<String>.from(produto.alergenos);
   }
 
   @override
@@ -66,16 +73,17 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(produto.id == null ? 'Novo Produto' : 'Editar Produto'),
+        title: Center(child: Text(produto.id == null ? 'Novo Produto' : 'Editar Produto')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 controller: _descricaoController,
-                decoration: const InputDecoration(labelText: 'Descrição'),
+                decoration: const InputDecoration(labelText: 'Descrição do produto'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Descrição é obrigatória';
@@ -94,15 +102,19 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   if (value == null || value.isEmpty) {
                     return 'Valor unitário é obrigatório';
                   }
-                  if (double.tryParse(value) == null) {
-                    return 'Digite um valor válido';
+                  if (moedaParser(value) <= 0) {
+                    return 'Valor unitário deve ser maior que zero';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _tipoController,
-                decoration: const InputDecoration(labelText: 'Tipo'),
+                decoration: const InputDecoration(
+                  labelText: 'Tipo do produto',
+                  hintText: 'Ex: Bolo, Torta, Salgado',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Tipo é obrigatório';
@@ -112,7 +124,11 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               ),
               TextFormField(
                 controller: _saborController,
-                decoration: const InputDecoration(labelText: 'Sabor'),
+                decoration: const InputDecoration(
+                  labelText: 'Sabor do produto',
+                  hintText: 'Ex: Chocolate, Morango, Ninho',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Sabor é obrigatório';
@@ -121,7 +137,7 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 },
               ),
               SwitchListTile(
-                title: const Text('Contém Glúten'),
+                title: const Text('Contém glúten?'),
                 value:  _temGlutem,
                 onChanged: (value) {
                   setState(() {
@@ -130,7 +146,7 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 },
               ),
               SwitchListTile(
-                title: const Text('Contém Lactose'),
+                title: const Text('Contém lactose?'),
                 value: _temLactose,
                 onChanged: (value) {
                   setState(() {
@@ -138,9 +154,67 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   });
                 },
               ),
+              SwitchListTile(
+                title: const Text('É vegano?'),
+                value: _vegano,
+                onChanged: (value) {
+                  setState(() {
+                    _vegano = value;
+                  });
+                },
+              ),
+              const Text('Possíveis componentes alérgenos', style: TextStyle(fontSize: 16)),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _alergenosController,
+                      decoration: const InputDecoration(
+                        hintText: 'Ex: Amendoim, Castanhas, Soja',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      final alergeno = _alergenosController.text.trim();
+                      if (alergeno.isNotEmpty) {
+                        setState(() {
+                          _alergenos.add(alergeno);
+                          _alergenosController.clear();
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              const SizedBox(
+                height: 30,
+                child: Text('Alérgenos selecionados:', style: TextStyle(fontSize: 16)),
+              ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (var alergeno in _alergenos)
+                    Chip(
+                      label: Text(alergeno),
+                      onDeleted: () {
+                        setState(() {
+                          _alergenos.remove(alergeno);
+                        });
+                      },
+                    ),
+                ],
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
+
+                  if (!_formKey.currentState!.validate()) {
+                    return;
+                  }
                   
                   final novoProduto = produto.copyWith(
                     descricao: _descricaoController.text,
@@ -149,16 +223,20 @@ class _ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                     sabor: _saborController.text,
                     temGlutem: _temGlutem,
                     temLactose: _temLactose,
+                    vegano: _vegano,
+                    alergenos: _alergenos,
                   );
 
                   await ref
                       .read(produtoListControllerProvider.notifier)
                       .inserirOuAtualizarProduto(novoProduto);
+
                   if (context.mounted) {
                     Navigator.of(context).pop(true);
                   }
+
                 },
-                child: Text(produto.id == null ? 'Criar' : 'Salvar'),
+                child: Text(produto.id == null ? 'Cadastrar' : 'Salvar'),
               ),
             ],
           ),

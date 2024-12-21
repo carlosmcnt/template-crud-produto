@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +28,7 @@ class ProdutoListPage extends ConsumerWidget {
     final produtoList = ref.watch(produtoListControllerProvider);
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Lista de Produtos'),
+          title: const Center(child: Text('Lista de Produtos')),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -41,8 +42,10 @@ class ProdutoListPage extends ConsumerWidget {
                     sabor: '',
                     temGlutem: false,
                     temLactose: false,
-                    dataCadastro: DateTime.now().toLocal().toString(),
-                    dataUltimaAlteracao: DateTime.now().toLocal().toString(),
+                    vegano: false,
+                    alergenos: [],
+                    dataCadastro: Timestamp.now(),
+                    dataUltimaAlteracao: Timestamp.now(),
                   ),
                 ),
               ),
@@ -66,10 +69,10 @@ class ProdutoListPage extends ConsumerWidget {
         itemBuilder: (context, index) {
         final produto = produtos[index];
         return ListTile(
-            title: Text(produto.descricao),
-            subtitle: Text('R\$ ${NumberFormat
+            title: Text('${produto.tipo} sabor ${produto.sabor} - R\$ ${NumberFormat
                 .currency(locale: 'pt_BR', symbol: '')
-                .format(produto.valorUnitario)}'),
+                .format(produto.valorUnitario)}'), 
+            subtitle: Text(produto.descricao),
             trailing: IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {

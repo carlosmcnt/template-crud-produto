@@ -7,12 +7,14 @@ class Produto {
   final double valorUnitario;
   final String tipo;
   final String sabor;
-  final String dataCadastro;
   final bool temGlutem;
   final bool temLactose;
-  final String dataUltimaAlteracao;
+  final bool vegano;
+  final List<String> alergenos;
+  final Timestamp dataCadastro;
+  final Timestamp dataUltimaAlteracao;
 
-  Produto({this.id, required this.descricao, required this.valorUnitario, required this.tipo, required this.sabor, required this.dataCadastro, this.temGlutem = false, this.temLactose = false, required this.dataUltimaAlteracao});
+  Produto({this.id, required this.descricao, required this.valorUnitario, required this.tipo, required this.sabor, this.temGlutem = false, this.temLactose = false, this.vegano = false, required this.alergenos, required this.dataCadastro, required this.dataUltimaAlteracao});
 
   factory Produto.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -22,10 +24,12 @@ class Produto {
       valorUnitario: (data['valorUnitario'] ?? 0.0).toDouble(),
       tipo: data['tipo'] ?? '',
       sabor: data['sabor'] ?? '',
-      dataCadastro: DateTime.parse(data['dataCadastro']).toString(),
+      dataCadastro: data['dataCadastro'],
       temGlutem: data['temGlutem'] ?? false,
       temLactose: data['temLactose'] ?? false,
-      dataUltimaAlteracao: DateTime.parse(data['dataUltimaAlteracao']).toString(),
+      vegano: data['vegano'] ?? false,
+      alergenos: List<String>.from(data['alergenos'] ?? []),
+      dataUltimaAlteracao: data['dataUltimaAlteracao'],
     );
   }
 
@@ -38,6 +42,8 @@ class Produto {
       'dataCadastro': dataCadastro,
       'temGlutem': temGlutem,
       'temLactose': temLactose,
+      'vegano': vegano,
+      'alergenos': alergenos,
       'dataUltimaAlteracao': dataUltimaAlteracao,
     };
   }
@@ -48,10 +54,12 @@ class Produto {
     double? valorUnitario,
     String? tipo,
     String? sabor,
-    String? dataCadastro,
     bool? temGlutem,
     bool? temLactose,
-    String? dataUltimaAlteracao,
+    bool? vegano,
+    List<String>? alergenos,
+    Timestamp? dataCadastro,
+    Timestamp? dataUltimaAlteracao,
   }) {
     return Produto(
       id: id ?? this.id,
@@ -59,9 +67,11 @@ class Produto {
       valorUnitario: valorUnitario ?? this.valorUnitario,
       tipo: tipo ?? this.tipo,
       sabor: sabor ?? this.sabor,
-      dataCadastro: dataCadastro ?? this.dataCadastro,
       temGlutem: temGlutem ?? this.temGlutem,
       temLactose: temLactose ?? this.temLactose,
+      vegano: vegano ?? this.vegano,
+      alergenos: alergenos ?? this.alergenos,
+      dataCadastro: dataCadastro ?? this.dataCadastro,
       dataUltimaAlteracao: dataUltimaAlteracao ?? this.dataUltimaAlteracao,
     );
   }
