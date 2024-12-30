@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 
 class ProdutoEditPage extends ConsumerStatefulWidget {
   final Produto produto;
@@ -29,26 +30,14 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   bool _temGlutem = false;
   bool _vegano = false;
   Produto get produto => widget.produto;
-
-  final NumberFormat currencyFormat = NumberFormat.currency(
-    locale: 'pt_BR',
-    symbol: 'R\$',
-  );
-
-  double moedaParser(String value) {
-    String normalized = value.replaceAll(currencyFormat.currencySymbol, '').trim();
-    normalized = normalized.replaceAll('.', '').replaceAll(',', '.');
-    return double.tryParse(normalized) ?? 0.0;
-  }
+  NormalizadorMoeda normalizador = NormalizadorMoeda();
 
   @override
   void initState() {
     super.initState();
     _descricaoController = TextEditingController(text: produto.descricao);
     _valorController = TextEditingController(
-      text: widget.produto.valorUnitario > 0
-          ? currencyFormat.format(widget.produto.valorUnitario).replaceAll(currencyFormat.currencySymbol, '')
-          : '',
+      text: produto.valorUnitario.toString()
     );
     _tipoController = TextEditingController(text: produto.tipo);
     _saborController = TextEditingController(text: produto.sabor);
@@ -95,14 +84,17 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 controller: _valorController,
                 decoration: const InputDecoration(
                   labelText: 'Valor Unitário',
-                  prefixText: 'R\$ ',
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  FormatadorMoedaReal(),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Valor unitário é obrigatório';
                   }
-                  if (moedaParser(value) <= 0) {
+                  if (normalizador.normalizarMoeda(value) <= 0) {
                     return 'Valor unitário deve ser maior que zero';
                   }
                   return null;
@@ -218,7 +210,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   
                   final novoProduto = produto.copyWith(
                     descricao: _descricaoController.text,
-                    valorUnitario: moedaParser(_valorController.text),
+                    valorUnitario: normalizador.normalizarMoeda(_valorController.text),
                     tipo: _tipoController.text,
                     sabor: _saborController.text,
                     temGlutem: _temGlutem,

@@ -29,6 +29,7 @@ class ProdutoListPage extends ConsumerWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Center(child: Text('Lista de Produtos')),
+          automaticallyImplyLeading: false,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
