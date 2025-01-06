@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/login/services/login_service.dart';
 import 'package:template_crud_produto/login/views/cadastro_widget.dart';
-import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
+import 'package:template_crud_produto/login/views/menu_principal_widget.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
 
@@ -41,6 +41,7 @@ class LoginPageState extends ConsumerState<LoginPage>{
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('Login')),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -52,6 +53,7 @@ class LoginPageState extends ConsumerState<LoginPage>{
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'E-mail:',
+                  prefixIcon: Icon(Icons.email, color: Colors.blue),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -60,16 +62,18 @@ class LoginPageState extends ConsumerState<LoginPage>{
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _senhaController,
                 obscureText: !senhaVisivel,
                 decoration: InputDecoration(
                   labelText: 'Senha:',
+                  prefixIcon: const Icon(Icons.lock, color: Colors.blue),
                   suffixIcon: IconButton(
                     icon: Icon(
                             senhaVisivel
-                            ? Icons.lock_open
-                            : Icons.lock,
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                             color: Theme.of(context).primaryColor,
                           ),
                     onPressed: () {
@@ -89,6 +93,12 @@ class LoginPageState extends ConsumerState<LoginPage>{
               ),
               const SizedBox(height: 15),
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onPressed: () async {
 
                   if (!_formKey.currentState!.validate()) {
@@ -106,14 +116,14 @@ class LoginPageState extends ConsumerState<LoginPage>{
                   if(retornoLogin) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const ProdutoListPage(),
+                        builder: (context) => const MenuPrincipalWidget(),
                       )
                     );
                   }
 
                 },
-                label: const Text('Entrar'),
-                icon: const Icon(Icons.login),
+                label: const Text('Entrar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                icon: const Icon(Icons.login, color: Colors.white),
               ),
               const SizedBox(height: 10),
               TextButton(
@@ -134,7 +144,7 @@ class LoginPageState extends ConsumerState<LoginPage>{
                   
                   if (!context.mounted) return;
                 },
-                child: const Text('Esqueceu a senha?'),
+                child: const Text('Esqueceu a senha? Preencha seu e-mail e clique aqui'),
               ),
             ],
           ),

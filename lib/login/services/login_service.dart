@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:template_crud_produto/login/models/usuario.dart';
 import 'package:template_crud_produto/login/repositories/login_repository.dart';
 
 part 'login_service.g.dart';
@@ -52,6 +53,14 @@ class LoginService {
       return true;
     }
     return false;
+  }
+
+  Future<String?> obterIdUsuarioLogado() async {
+    return await loginRepository.obterIdUsuarioLogado();
+  }
+
+  Future<Usuario?> obterUsuarioLogado() async {
+    return await loginRepository.obterUsuarioAtual();
   }
 
   snackbarStatus({required String mensagem, required BuildContext context, required bool erro}) {

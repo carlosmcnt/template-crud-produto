@@ -62,7 +62,7 @@ class CadastroPageState extends ConsumerState<CadastroPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('Cadastro')),
+        title: const Center(child: Text('Cadastre-se')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

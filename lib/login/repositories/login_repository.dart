@@ -99,6 +99,14 @@ class LoginRepository {
     return null;
   }
 
+  Future<String?> obterIdUsuarioLogado() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    }
+    return null;
+  }
+
 }
 
 @riverpod
