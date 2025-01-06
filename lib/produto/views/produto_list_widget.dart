@@ -2,13 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
+import 'package:template_crud_produto/utils/menu_lateral.dart';
 
 class ProdutoListPage extends ConsumerWidget {
 
-  const ProdutoListPage({super.key});
+  const ProdutoListPage({super.key, required this.empresa});
+  final Empresa empresa;
 
   void atualizar(WidgetRef ref) {
     ref.read(produtoListControllerProvider.notifier).verificarEstado();
@@ -28,8 +31,7 @@ class ProdutoListPage extends ConsumerWidget {
     final produtoList = ref.watch(produtoListControllerProvider);
     return Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('Lista de Produtos')),
-          automaticallyImplyLeading: false,
+          title: Center(child: Text('Lista de Produtos - ${empresa.nomeFantasia}')),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -45,9 +47,11 @@ class ProdutoListPage extends ConsumerWidget {
                     temLactose: false,
                     vegano: false,
                     alergenos: [],
+                    empresaId: empresa.id!,
                     dataCadastro: Timestamp.now(),
                     dataUltimaAlteracao: Timestamp.now(),
                   ),
+                  empresa: empresa,
                 ),
               ),
             );
@@ -61,7 +65,8 @@ class ProdutoListPage extends ConsumerWidget {
           data: (list) => buildProdutoList(ref, list),
           error: informarErro,
           loading: () => const CircularProgressIndicator(),
-        )
+        ),
+        drawer: const MenuLateralWidget(),
     );
   }
 
@@ -104,7 +109,7 @@ class ProdutoListPage extends ConsumerWidget {
         onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ProdutoEditPage(produto: produto),
+                builder: (context) => ProdutoEditPage(produto: produto, empresa: empresa),
               ),
           );
         },

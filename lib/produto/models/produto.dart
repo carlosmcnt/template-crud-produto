@@ -11,10 +11,24 @@ class Produto {
   final bool temLactose;
   final bool vegano;
   final List<String> alergenos;
+  final String empresaId;
   final Timestamp dataCadastro;
   final Timestamp dataUltimaAlteracao;
 
-  Produto({this.id, required this.descricao, required this.valorUnitario, required this.tipo, required this.sabor, this.temGlutem = false, this.temLactose = false, this.vegano = false, required this.alergenos, required this.dataCadastro, required this.dataUltimaAlteracao});
+  Produto({
+    this.id, 
+    required this.descricao, 
+    required this.valorUnitario, 
+    required this.tipo, 
+    required this.sabor, 
+    this.temGlutem = false, 
+    this.temLactose = false, 
+    this.vegano = false, 
+    required this.alergenos,
+    required this.empresaId, 
+    required this.dataCadastro, 
+    required this.dataUltimaAlteracao
+  });
 
   factory Produto.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -29,6 +43,7 @@ class Produto {
       temLactose: data['temLactose'] ?? false,
       vegano: data['vegano'] ?? false,
       alergenos: List<String>.from(data['alergenos'] ?? []),
+      empresaId: data['empresaId'] ?? '',
       dataUltimaAlteracao: data['dataUltimaAlteracao'],
     );
   }
@@ -44,6 +59,7 @@ class Produto {
       'temLactose': temLactose,
       'vegano': vegano,
       'alergenos': alergenos,
+      'empresaId': empresaId,
       'dataUltimaAlteracao': dataUltimaAlteracao,
     };
   }
@@ -58,6 +74,7 @@ class Produto {
     bool? temLactose,
     bool? vegano,
     List<String>? alergenos,
+    String? empresaId,
     Timestamp? dataCadastro,
     Timestamp? dataUltimaAlteracao,
   }) {
@@ -71,6 +88,7 @@ class Produto {
       temLactose: temLactose ?? this.temLactose,
       vegano: vegano ?? this.vegano,
       alergenos: alergenos ?? this.alergenos,
+      empresaId: empresaId ?? this.empresaId,
       dataCadastro: dataCadastro ?? this.dataCadastro,
       dataUltimaAlteracao: dataUltimaAlteracao ?? this.dataUltimaAlteracao,
     );

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
 
 class ProdutoEditPage extends ConsumerStatefulWidget {
   final Produto produto;
+  final Empresa empresa;
 
-  const ProdutoEditPage({super.key, required this.produto});
+  const ProdutoEditPage({super.key, required this.produto, required this.empresa});
   
   @override
   ConsumerState<ProdutoEditPage> createState() {
@@ -217,6 +219,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                     temLactose: _temLactose,
                     vegano: _vegano,
                     alergenos: _alergenos,
+                    empresaId: widget.empresa.id!,
                   );
 
                   await ref
