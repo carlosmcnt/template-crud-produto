@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:template_crud_produto/login/services/login_service.dart';
-import 'package:template_crud_produto/utils/estilos.dart';
-import 'dart:io';
+
+import 'package:template_crud_produto/utils/formatador.dart';
 
 class CadastroPage extends ConsumerStatefulWidget {
-
   const CadastroPage({super.key});
-  
+
   @override
   ConsumerState<CadastroPage> createState() {
     return CadastroPageState();
   }
 }
 
-class CadastroPageState extends ConsumerState<CadastroPage>{
-
+class CadastroPageState extends ConsumerState<CadastroPage> {
   late TextEditingController _nomeController;
   late TextEditingController _emailController;
   late TextEditingController _senhaController;
+  late TextEditingController _repetirSenhaController;
   late TextEditingController _telefoneController;
-  late File? fotoPerfil;
   bool senhaVisivel = false;
+  bool repetirSenhaVisivel = false;
+  bool autoValidate = false;
   late String nomeArquivo = 'Nenhuma foto selecionada';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -34,8 +32,8 @@ class CadastroPageState extends ConsumerState<CadastroPage>{
     _nomeController = TextEditingController();
     _emailController = TextEditingController();
     _senhaController = TextEditingController();
+    _repetirSenhaController = TextEditingController();
     _telefoneController = TextEditingController();
-    fotoPerfil = null;
   }
 
   @override
@@ -43,146 +41,231 @@ class CadastroPageState extends ConsumerState<CadastroPage>{
     _nomeController.dispose();
     _emailController.dispose();
     _senhaController.dispose();
+    _repetirSenhaController.dispose();
     _telefoneController.dispose();
     super.dispose();
   }
 
-  Future<void> selecionarFoto() async {
-    final picker = ImagePickerPlugin();
-    final imagem = await picker.getImageFromSource(
-      source: ImageSource.gallery,
-    );
-    setState(() {
-      fotoPerfil = File(imagem!.path);
-      nomeArquivo = fotoPerfil!.path.split('/').last;
-    });
+  bool emailValido(String value) {
+    String pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern);
+    return (!regex.hasMatch(value)) ? false : true;
+  }
+
+  Future<void> cadastrar(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
+      setState(() => autoValidate = true);
+      return;
+    }
+
+    bool retornoCadastro = await ref.read(loginServiceProvider).registrar(
+          nome: _nomeController.text,
+          email: _emailController.text,
+          senha: _senhaController.text,
+          telefone: _telefoneController.text,
+          context: context,
+        );
+
+    if (!context.mounted) return;
+
+    if (retornoCadastro) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Cadastre-se')),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome:',
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          width: MediaQuery.of(context).size.width,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _inicio(context),
+                _camposObrigatorios(context),
+                const SizedBox(height: 60),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text("Já possui uma conta?"),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Faça o login",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ))
+                  ],
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, informe o nome';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'E-mail:',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, informe o e-mail';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _senhaController,
-                obscureText: !senhaVisivel,
-                decoration: InputDecoration(
-                  labelText: 'Senha:',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                            senhaVisivel
-                            ? Icons.lock_open
-                            : Icons.lock,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                    onPressed: () {
-                      setState(() {
-                        senhaVisivel = !senhaVisivel;
-                      });
-                    },
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, informe a senha';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _telefoneController,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  MaskedInputFormatter('(##)#####-####'),
-                ],
-                decoration: const InputDecoration(
-                  labelText: 'Telefone:',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, informe o telefone';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Foto do Perfil: $nomeArquivo', style: const TextStyle(fontSize: 16)),
-                  ElevatedButton.icon(
-                    style: Estilos().botaoLargo,
-                    onPressed: () async {
-                      selecionarFoto();
-                    },
-                    label: const Text('Selecionar Foto'),
-                    icon: const Icon(Icons.photo_camera),
-                  ),
-                ]
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: () async {
-
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
-
-                  bool retornoCadastro = await ref.read(loginServiceProvider).registrar(
-                    nome: _nomeController.text,
-                    email: _emailController.text,
-                    senha: _senhaController.text,
-                    telefone: _telefoneController.text,
-                    fotoPerfil: fotoPerfil!,
-                    context: context,
-                  );
-
-                  if(!context.mounted) return;
-
-                  if(retornoCadastro) {
-                    Navigator.of(context).pop();
-                  }
-
-                },
-                label: const Text('Cadastrar'),
-                icon: const Icon(Icons.login),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  _inicio(context) {
+    return Column(
+      children: [
+        const Text(
+          "Cadastre-se para continuar!",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text("Preencha os campos abaixo para criar sua conta",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            )),
+        const SizedBox(height: 50),
+      ],
+    );
+  }
+
+  _camposObrigatorios(context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _nomeController,
+          decoration: InputDecoration(
+            hintText: "Nome:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.face),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, informe o nome';
+            }
+            return null;
+          },
+          inputFormatters: [
+            FormatadorLetrasMaiusculas(),
+          ],
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _emailController,
+          decoration: InputDecoration(
+            hintText: "E-mail:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.email),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, informe o e-mail';
+            }
+            if (!emailValido(value)) {
+              return 'Por favor, informe um e-mail válido';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _senhaController,
+          obscureText: !senhaVisivel,
+          decoration: InputDecoration(
+            hintText: "Senha:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.password),
+            suffixIcon: IconButton(
+              icon: Icon(
+                senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () {
+                setState(() {
+                  senhaVisivel = !senhaVisivel;
+                });
+              },
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, informe a senha';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _repetirSenhaController,
+          obscureText: !repetirSenhaVisivel,
+          decoration: InputDecoration(
+            hintText: "Confirme a senha:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.password),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, repita a senha';
+            }
+            if (value != _senhaController.text) {
+              return 'As senhas não conferem';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _telefoneController,
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            MaskedInputFormatter('(##)#####-####'),
+          ],
+          decoration: InputDecoration(
+            hintText: "Telefone:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.phone),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 14) {
+              return 'Por favor, informe o telefone corretamente';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: () async {
+            await cadastrar(context);
+          },
+          label: const Text('Cadastrar',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          icon: const Icon(Icons.login),
+        ),
+      ],
+    );
+  }
 }
