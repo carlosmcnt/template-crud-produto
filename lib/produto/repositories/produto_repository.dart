@@ -27,10 +27,11 @@ class ProdutoRepository {
     });
   }
 
-  Stream<List<Produto>> getProdutosPorEmpresa(String empresaId) {
-    return _firestore.collection('produtos').where('empresaId', isEqualTo: empresaId).snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
-    });
+  Future<List<Produto>> getProdutosPorEmpresa(String empresaId) async {
+  return _firestore.collection('produtos').where('empresaId', isEqualTo: empresaId)
+      .get().then((snapshot) {
+        return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
+      });
   }
 
   Future<Produto> inserirProduto(Produto produto) async {

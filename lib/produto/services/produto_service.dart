@@ -20,7 +20,7 @@ class ProdutoService {
   }
 
   Future<List<Produto>> getProdutosPorEmpresa(String empresaId) async {
-    return await produtoRepository.getProdutosPorEmpresa(empresaId).first;
+    return await produtoRepository.getProdutosPorEmpresa(empresaId);
   }
 
   Future<Produto> criarProduto(Produto produto) async {

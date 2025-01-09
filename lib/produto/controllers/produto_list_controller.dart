@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:template_crud_produto/empresa/services/empresa_service.dart';
+import 'package:template_crud_produto/login/services/login_service.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/services/produto_service.dart';
 
@@ -9,12 +11,40 @@ class ProdutoListController extends _$ProdutoListController{
 
   @override
   Future<List<Produto>> build() async {
-    return ref.read(produtoServiceProvider).getProdutos();
+    state = const AsyncValue.loading();
+    try {
+      final usuarioId = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
+      final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(usuarioId!);
+
+      if (empresa != null) {
+        final produtos = await ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa.id!);
+        state = AsyncValue.data(produtos);
+        return produtos;
+      } else {
+        state = const AsyncValue.data([]);
+        return [];
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+      return [];
+    }
   }
 
   Future<void> verificarEstado() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(ref.read(produtoServiceProvider).getProdutos);
+    try {
+      final usuarioId = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
+      final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(usuarioId!);
+
+      if (empresa != null) {
+        final produtos = await ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa.id!);
+        state = AsyncValue.data(produtos);
+      } else {
+        state = const AsyncValue.data([]);
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
   Future<void> inserirOuAtualizarProduto(Produto produto) async {
@@ -25,14 +55,23 @@ class ProdutoListController extends _$ProdutoListController{
     } else {
       await produtoService.atualizarProduto(produto);
     }
-    state = await AsyncValue.guard(produtoService.getProdutos);
+    
+    final idUsuarioAtivo = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
+    final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+     state = await AsyncValue.guard(() async {
+        return ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa!.id!);
+    });
   }
 
   Future<void> deletarProduto(Produto produto) async {
     final produtoService = ref.read(produtoServiceProvider);
     state = const AsyncValue.loading();
     await produtoService.deletarProduto(produto.id!);
-    state = await AsyncValue.guard(produtoService.getProdutos);
+    final idUsuarioAtivo = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
+    final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+     state = await AsyncValue.guard(() async {
+        return ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa!.id!);
+    });
   }
 
 }
