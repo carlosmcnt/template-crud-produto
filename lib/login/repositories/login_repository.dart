@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/firebase/firebase.dart';
@@ -10,22 +8,18 @@ import 'package:template_crud_produto/login/models/usuario.dart';
 part 'login_repository.g.dart';
 
 class LoginRepository {
-
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
 
-  LoginRepository(this._auth, this._firestore, this._storage);
+  LoginRepository(this._auth, this._firestore);
 
   Future<String?> registrar({
     required String nomeCompleto,
     required String email,
     required String senha,
     required String telefone,
-    required File fotoPerfil,
   }) async {
     try {
-
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: senha,
@@ -34,17 +28,13 @@ class LoginRepository {
       final user = userCredential.user;
       if (user == null) throw FirebaseAuthException(code: 'user-not-found');
 
-      const fotoPerfilUrl = '';
-
       await _firestore.collection('usuarios').doc(user.uid).set({
         'nomeCompleto': nomeCompleto,
         'email': email,
         'telefone': telefone,
-        'fotoPerfil': fotoPerfilUrl,
         'dataCadastro': Timestamp.now(),
         'dataUltimaAlteracao': Timestamp.now(),
       });
-
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
@@ -106,13 +96,11 @@ class LoginRepository {
     }
     return null;
   }
-
 }
 
 @riverpod
 LoginRepository loginRepository(Ref ref) {
   final FirebaseAuth auth = ref.watch(firebaseAuthProvider);
   final FirebaseFirestore firestore = ref.watch(firebaseFirestoreProvider);
-  final FirebaseStorage storage = ref.watch(firebaseStorageProvider);
-  return LoginRepository(auth, firestore, storage);
+  return LoginRepository(auth, firestore);
 }

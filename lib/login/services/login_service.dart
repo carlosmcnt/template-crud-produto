@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,7 +8,6 @@ import 'package:template_crud_produto/login/repositories/login_repository.dart';
 part 'login_service.g.dart';
 
 class LoginService {
-
   final LoginRepository loginRepository;
 
   LoginService({required this.loginRepository});
@@ -20,9 +16,11 @@ class LoginService {
     final resultado = await loginRepository.entrar(email: email, senha: senha);
     if (resultado != null) {
       snackbarStatus(mensagem: resultado, context: context, erro: true);
-    }
-    else {
-      snackbarStatus(mensagem: 'Login realizado com sucesso!', context: context, erro: false);
+    } else {
+      snackbarStatus(
+          mensagem: 'Login realizado com sucesso!',
+          context: context,
+          erro: false);
       return true;
     }
     return false;
@@ -37,19 +35,33 @@ class LoginService {
     final resultado = await loginRepository.redefinirSenha(email: email);
     if (resultado != null) {
       snackbarStatus(mensagem: resultado, context: context, erro: true);
-    }
-    else {
-      snackbarStatus(mensagem: 'E-mail de redefinição de senha enviado!', context: context, erro: false);
+    } else {
+      snackbarStatus(
+          mensagem: 'E-mail de redefinição de senha enviado!',
+          context: context,
+          erro: false);
     }
   }
 
-  Future<bool> registrar({required String nome, required String email, required String senha, required String telefone, required File fotoPerfil, required BuildContext context}) async {
-    final resultado = await loginRepository.registrar(nomeCompleto: nome, email: email, senha: senha, telefone: telefone, fotoPerfil: fotoPerfil);
+  Future<bool> registrar(
+      {required String nome,
+      required String email,
+      required String senha,
+      required String telefone,
+      required BuildContext context}) async {
+    final resultado = await loginRepository.registrar(
+      nomeCompleto: nome,
+      email: email,
+      senha: senha,
+      telefone: telefone,
+    );
     if (resultado != null) {
       snackbarStatus(mensagem: resultado, context: context, erro: true);
-    }
-    else {
-      snackbarStatus(mensagem: 'Cadastro realizado com sucesso!', context: context, erro: false);
+    } else {
+      snackbarStatus(
+          mensagem: 'Cadastro realizado com sucesso!',
+          context: context,
+          erro: false);
       return true;
     }
     return false;
@@ -63,7 +75,10 @@ class LoginService {
     return await loginRepository.obterUsuarioAtual();
   }
 
-  snackbarStatus({required String mensagem, required BuildContext context, required bool erro}) {
+  snackbarStatus(
+      {required String mensagem,
+      required BuildContext context,
+      required bool erro}) {
     SnackBar snackbar = SnackBar(
       duration: const Duration(seconds: 3),
       content: Text(mensagem),
@@ -71,7 +86,6 @@ class LoginService {
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
-
 }
 
 @Riverpod(keepAlive: true)
