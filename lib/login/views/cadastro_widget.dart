@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/login/services/login_service.dart';
 
 import 'package:template_crud_produto/utils/formatador.dart';
+import 'package:template_crud_produto/utils/validador.dart';
 
 class CadastroPage extends ConsumerStatefulWidget {
   const CadastroPage({super.key});
@@ -44,13 +45,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
     _repetirSenhaController.dispose();
     _telefoneController.dispose();
     super.dispose();
-  }
-
-  bool emailValido(String value) {
-    String pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = RegExp(pattern);
-    return (!regex.hasMatch(value)) ? false : true;
   }
 
   Future<void> cadastrar(BuildContext context) async {
@@ -173,7 +167,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             if (value == null || value.isEmpty) {
               return 'Por favor, informe o e-mail';
             }
-            if (!emailValido(value)) {
+            if (!Validador().emailValido(value)) {
               return 'Por favor, informe um e-mail válido';
             }
             return null;
