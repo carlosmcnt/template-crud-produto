@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/diversos/views/dados_usuario.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
@@ -17,11 +18,9 @@ class MenuLateralWidget extends ConsumerStatefulWidget {
   ConsumerState<MenuLateralWidget> createState() {
     return MenuLateralWidgetState();
   }
-
 }
 
-class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
-
+class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
   Usuario? usuario;
 
   @override
@@ -44,12 +43,14 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
   }
 
   Future<Empresa?> pesquisarEmpresaPorUsuario() async {
-    Empresa? empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(usuario!.id!);
+    Empresa? empresa = await ref
+        .read(empresaServiceProvider)
+        .obterEmpresaPorUsuarioId(usuario!.id!);
     return empresa;
   }
 
   @override
-  Widget build (BuildContext context) {
+  Widget build(BuildContext context) {
     return menuLateral(context);
   }
 
@@ -57,80 +58,79 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text(usuario?.nomeCompleto ?? ''),
-              accountEmail: Text(usuario?.email ?? ''),
-              currentAccountPictureSize: const Size.square(64),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                child: Text(usuario?.nomeCompleto.substring(0, 1) ?? '', 
-                style: const TextStyle(fontSize: 30.0, color: Colors.blue)),
-              ),
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text(usuario?.nomeCompleto ?? ''),
+            accountEmail: Text(usuario?.email ?? ''),
+            currentAccountPictureSize: const Size.square(64),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              child: Text(usuario?.nomeCompleto.substring(0, 1) ?? '',
+                  style: const TextStyle(fontSize: 30.0, color: Colors.blue)),
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text("Meus dados"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text("Início"),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const MenuPrincipalWidget(),
-                  )
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.business),
-              title: const Text("Perfil Empresa"),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return verificarEmpresaExistente(context, ref);
-                  },
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.list_alt),
-              title: const Text("Histórico de pedidos"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.favorite),
-              title: const Text("Empresas favoritas"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text("Sair"),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return dialogoConfirmacaoSaida(context, ref);
-                  },
-                );
-              },
-            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text("Meus dados"),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => DadosUsuario(usuario: usuario!),
+              ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text("Início"),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const MenuPrincipalWidget(),
+              ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.business),
+            title: const Text("Perfil Empresa"),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return verificarEmpresaExistente(context, ref);
+                },
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.list_alt),
+            title: const Text("Histórico de pedidos"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text("Empresas favoritas"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text("Sair"),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return dialogoConfirmacaoSaida(context, ref);
+                },
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
   Widget verificarEmpresaExistente(BuildContext context, WidgetRef ref) {
-
     return FutureBuilder<Empresa?>(
       future: pesquisarEmpresaPorUsuario(),
       builder: (context, snapshot) {
@@ -143,7 +143,8 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => ProdutoListPage(empresa: snapshot.data!),
+                  builder: (context) =>
+                      ProdutoListPage(empresa: snapshot.data!),
                 ),
               );
             });
@@ -183,34 +184,32 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
   }
 
   AlertDialog dialogoCriacaoEmpresa(BuildContext context, WidgetRef ref) {
-
     return AlertDialog(
       title: const Text('Criação de Empresa'),
-      content: const Text('Você ainda não possui um perfil de empresa. Deseja criar um agora?'),
+      content: const Text(
+          'Você ainda não possui um perfil de empresa. Deseja criar um agora?'),
       actions: <Widget>[
         TextButton(
           onPressed: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => 
-                  EmpresaEditPage(
-                    empresa: Empresa(
-                      nomeFantasia: '',
-                      usuarioId: usuario!.id!,
-                      chavePix: '',
-                      descricao: '',
-                      logomarca: '',
-                      locaisEntrega: [],
-                      dataCadastro: Timestamp.now(),
-                      dataUltimaAlteracao: Timestamp.now(),
-                    ),
+                builder: (context) => EmpresaEditPage(
+                  empresa: Empresa(
+                    nomeFantasia: '',
+                    usuarioId: usuario!.id!,
+                    chavePix: '',
+                    descricao: '',
+                    logomarca: '',
+                    locaisEntrega: [],
+                    dataCadastro: Timestamp.now(),
+                    dataUltimaAlteracao: Timestamp.now(),
                   ),
+                ),
               ),
             );
           },
           child: const Text('Sim'),
         ),
-        
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -220,5 +219,4 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget>{
       ],
     );
   }
-
 }
