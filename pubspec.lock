@@ -86,6 +86,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  br_validators:
+    dependency: "direct main"
+    description:
+      name: br_validators
+      sha256: "8b3869396f68acfed462ae82a14f48780ddf6da755d6437f5a486e9f48e6ecb0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   build:
     dependency: transitive
     description:
@@ -669,6 +677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2-main.4"
+  mask_text_input_formatter:
+    dependency: transitive
+    description:
+      name: mask_text_input_formatter
+      sha256: "978c58ec721c25621ceb468e633f4eef64b64d45424ac4540e0565d4f7c800cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.0"
   matcher:
     dependency: transitive
     description:
