@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/login/services/login_service.dart';
-import 'package:template_crud_produto/login/views/cadastro_widget.dart';
-import 'package:template_crud_produto/login/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
+import 'package:template_crud_produto/usuario/views/cadastro_widget.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -39,7 +39,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
-    bool retornoLogin = await ref.read(loginServiceProvider).login(
+    bool retornoLogin = await ref.read(usuarioServiceProvider).login(
           _emailController.text.trim(),
           _senhaController.text.trim(),
           context,
@@ -106,7 +106,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
       child: TextButton(
         onPressed: () async {
           await ref
-              .read(loginServiceProvider)
+              .read(usuarioServiceProvider)
               .redefinirSenha(_emailController.text.trim(), context);
 
           if (!context.mounted) return;

@@ -3,19 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/firebase/firebase.dart';
-import 'package:template_crud_produto/login/models/usuario.dart';
+import 'package:template_crud_produto/usuario/models/usuario.dart';
 
-part 'login_repository.g.dart';
+part 'usuario_repository.g.dart';
 
-class LoginRepository {
+class UsuarioRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
-  LoginRepository(this._auth, this._firestore);
+  UsuarioRepository(this._auth, this._firestore);
 
   Future<String?> registrar({
     required String nomeCompleto,
     required String email,
+    required String cpf,
     required String senha,
     required String telefone,
   }) async {
@@ -31,6 +32,7 @@ class LoginRepository {
       await _firestore.collection('usuarios').doc(user.uid).set({
         'nomeCompleto': nomeCompleto,
         'email': email,
+        'cpf': cpf,
         'telefone': telefone,
         'dataCadastro': Timestamp.now(),
         'dataUltimaAlteracao': Timestamp.now(),
@@ -96,11 +98,22 @@ class LoginRepository {
     }
     return null;
   }
+
+  Future<void> atualizarUsuario(Usuario usuario) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('usuarios').doc(user.uid).update({
+        'nomeCompleto': usuario.nomeCompleto,
+        'telefone': usuario.telefone,
+        'dataUltimaAlteracao': Timestamp.now(),
+      });
+    }
+  }
 }
 
 @riverpod
-LoginRepository loginRepository(Ref ref) {
+UsuarioRepository usuarioRepository(Ref ref) {
   final FirebaseAuth auth = ref.watch(firebaseAuthProvider);
   final FirebaseFirestore firestore = ref.watch(firebaseFirestoreProvider);
-  return LoginRepository(auth, firestore);
+  return UsuarioRepository(auth, firestore);
 }

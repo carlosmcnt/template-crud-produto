@@ -1,23 +1,27 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
-import 'package:template_crud_produto/login/services/login_service.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/services/produto_service.dart';
 
 part 'produto_list_controller.g.dart';
 
 @riverpod
-class ProdutoListController extends _$ProdutoListController{
-
+class ProdutoListController extends _$ProdutoListController {
   @override
   Future<List<Produto>> build() async {
     state = const AsyncValue.loading();
     try {
-      final usuarioId = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
-      final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(usuarioId!);
+      final usuarioId =
+          await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+      final empresa = await ref
+          .read(empresaServiceProvider)
+          .obterEmpresaPorUsuarioId(usuarioId!);
 
       if (empresa != null) {
-        final produtos = await ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa.id!);
+        final produtos = await ref
+            .read(produtoServiceProvider)
+            .getProdutosPorEmpresa(empresa.id!);
         state = AsyncValue.data(produtos);
         return produtos;
       } else {
@@ -33,11 +37,16 @@ class ProdutoListController extends _$ProdutoListController{
   Future<void> verificarEstado() async {
     state = const AsyncValue.loading();
     try {
-      final usuarioId = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
-      final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(usuarioId!);
+      final usuarioId =
+          await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+      final empresa = await ref
+          .read(empresaServiceProvider)
+          .obterEmpresaPorUsuarioId(usuarioId!);
 
       if (empresa != null) {
-        final produtos = await ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa.id!);
+        final produtos = await ref
+            .read(produtoServiceProvider)
+            .getProdutosPorEmpresa(empresa.id!);
         state = AsyncValue.data(produtos);
       } else {
         state = const AsyncValue.data([]);
@@ -55,11 +64,16 @@ class ProdutoListController extends _$ProdutoListController{
     } else {
       await produtoService.atualizarProduto(produto);
     }
-    
-    final idUsuarioAtivo = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
-    final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(idUsuarioAtivo!);
-     state = await AsyncValue.guard(() async {
-        return ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa!.id!);
+
+    final idUsuarioAtivo =
+        await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+    final empresa = await ref
+        .read(empresaServiceProvider)
+        .obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+    state = await AsyncValue.guard(() async {
+      return ref
+          .read(produtoServiceProvider)
+          .getProdutosPorEmpresa(empresa!.id!);
     });
   }
 
@@ -67,11 +81,15 @@ class ProdutoListController extends _$ProdutoListController{
     final produtoService = ref.read(produtoServiceProvider);
     state = const AsyncValue.loading();
     await produtoService.deletarProduto(produto.id!);
-    final idUsuarioAtivo = await ref.read(loginServiceProvider).obterIdUsuarioLogado();
-    final empresa = await ref.read(empresaServiceProvider).obterEmpresaPorUsuarioId(idUsuarioAtivo!);
-     state = await AsyncValue.guard(() async {
-        return ref.read(produtoServiceProvider).getProdutosPorEmpresa(empresa!.id!);
+    final idUsuarioAtivo =
+        await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+    final empresa = await ref
+        .read(empresaServiceProvider)
+        .obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+    state = await AsyncValue.guard(() async {
+      return ref
+          .read(produtoServiceProvider)
+          .getProdutosPorEmpresa(empresa!.id!);
     });
   }
-
 }

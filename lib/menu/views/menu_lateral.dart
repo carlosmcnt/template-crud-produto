@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/diversos/views/dados_usuario.dart';
+import 'package:template_crud_produto/menu/views/dados_usuario.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
-import 'package:template_crud_produto/login/models/usuario.dart';
-import 'package:template_crud_produto/login/services/login_service.dart';
-import 'package:template_crud_produto/login/views/login_widget.dart';
-import 'package:template_crud_produto/login/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/models/usuario.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
+import 'package:template_crud_produto/usuario/views/login_widget.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
 import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 
 class MenuLateralWidget extends ConsumerStatefulWidget {
@@ -31,7 +31,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
 
   Future<void> _initializeUsuario() async {
     try {
-      final user = await ref.read(loginServiceProvider).obterUsuarioLogado();
+      final user = await ref.read(usuarioServiceProvider).obterUsuarioLogado();
       if (user != null) {
         setState(() {
           usuario = user;
@@ -70,21 +70,29 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text("Meus dados"),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DadosUsuario(usuario: usuario!),
-              ));
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.home),
             title: const Text("Início"),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const MenuPrincipalWidget(),
               ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text("Meus dados"),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => DadosUsuario(
+                        usuario: Usuario(
+                          nomeCompleto: usuario!.nomeCompleto,
+                          email: usuario!.email,
+                          cpf: usuario!.cpf,
+                          telefone: usuario!.telefone,
+                          dataCadastro: usuario!.dataCadastro,
+                          dataUltimaAlteracao: usuario!.dataUltimaAlteracao,
+                        ),
+                      )));
             },
           ),
           ListTile(
@@ -164,7 +172,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            ref.read(loginServiceProvider).logout();
+            ref.read(usuarioServiceProvider).logout();
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const LoginPage(),

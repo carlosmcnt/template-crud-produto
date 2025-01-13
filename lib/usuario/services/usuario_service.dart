@@ -2,22 +2,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:template_crud_produto/login/models/usuario.dart';
-import 'package:template_crud_produto/login/repositories/login_repository.dart';
+import 'package:template_crud_produto/usuario/models/usuario.dart';
+import 'package:template_crud_produto/usuario/repositories/usuario_repository.dart';
+import 'package:template_crud_produto/utils/estilos.dart';
 
-part 'login_service.g.dart';
+part 'usuario_service.g.dart';
 
-class LoginService {
-  final LoginRepository loginRepository;
+class UsuarioService {
+  final UsuarioRepository usuarioRepository;
+  Estilos estilos = Estilos();
 
-  LoginService({required this.loginRepository});
+  UsuarioService({required this.usuarioRepository});
 
   Future<bool> login(String email, String senha, BuildContext context) async {
-    final resultado = await loginRepository.entrar(email: email, senha: senha);
+    final resultado =
+        await usuarioRepository.entrar(email: email, senha: senha);
     if (resultado != null) {
-      snackbarStatus(mensagem: resultado, context: context, erro: true);
+      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
     } else {
-      snackbarStatus(
+      estilos.snackbarStatus(
           mensagem: 'Login realizado com sucesso!',
           context: context,
           erro: false);
@@ -28,15 +31,15 @@ class LoginService {
 
   // Método para logout
   Future<void> logout() async {
-    await loginRepository.sair();
+    await usuarioRepository.sair();
   }
 
   Future<void> redefinirSenha(String email, BuildContext context) async {
-    final resultado = await loginRepository.redefinirSenha(email: email);
+    final resultado = await usuarioRepository.redefinirSenha(email: email);
     if (resultado != null) {
-      snackbarStatus(mensagem: resultado, context: context, erro: true);
+      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
     } else {
-      snackbarStatus(
+      estilos.snackbarStatus(
           mensagem: 'E-mail de redefinição de senha enviado!',
           context: context,
           erro: false);
@@ -46,19 +49,21 @@ class LoginService {
   Future<bool> registrar(
       {required String nome,
       required String email,
+      required String cpf,
       required String senha,
       required String telefone,
       required BuildContext context}) async {
-    final resultado = await loginRepository.registrar(
+    final resultado = await usuarioRepository.registrar(
       nomeCompleto: nome,
       email: email,
+      cpf: cpf,
       senha: senha,
       telefone: telefone,
     );
     if (resultado != null) {
-      snackbarStatus(mensagem: resultado, context: context, erro: true);
+      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
     } else {
-      snackbarStatus(
+      estilos.snackbarStatus(
           mensagem: 'Cadastro realizado com sucesso!',
           context: context,
           erro: false);
@@ -68,28 +73,20 @@ class LoginService {
   }
 
   Future<String?> obterIdUsuarioLogado() async {
-    return await loginRepository.obterIdUsuarioLogado();
+    return await usuarioRepository.obterIdUsuarioLogado();
   }
 
   Future<Usuario?> obterUsuarioLogado() async {
-    return await loginRepository.obterUsuarioAtual();
+    return await usuarioRepository.obterUsuarioAtual();
   }
 
-  snackbarStatus(
-      {required String mensagem,
-      required BuildContext context,
-      required bool erro}) {
-    SnackBar snackbar = SnackBar(
-      duration: const Duration(seconds: 3),
-      content: Text(mensagem),
-      backgroundColor: erro ? Colors.red : Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  Future<void> atualizarUsuario(Usuario usuario) async {
+    await usuarioRepository.atualizarUsuario(usuario);
   }
 }
 
 @Riverpod(keepAlive: true)
-LoginService loginService(Ref ref) {
-  final repository = ref.watch(loginRepositoryProvider);
-  return LoginService(loginRepository: repository);
+UsuarioService usuarioService(Ref ref) {
+  final repository = ref.watch(usuarioRepositoryProvider);
+  return UsuarioService(usuarioRepository: repository);
 }

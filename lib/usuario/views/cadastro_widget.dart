@@ -1,7 +1,8 @@
+import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/login/services/login_service.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 
 import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/validador.dart';
@@ -18,6 +19,7 @@ class CadastroPage extends ConsumerStatefulWidget {
 class CadastroPageState extends ConsumerState<CadastroPage> {
   late TextEditingController _nomeController;
   late TextEditingController _emailController;
+  late TextEditingController _cpfController;
   late TextEditingController _senhaController;
   late TextEditingController _repetirSenhaController;
   late TextEditingController _telefoneController;
@@ -32,6 +34,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
     super.initState();
     _nomeController = TextEditingController();
     _emailController = TextEditingController();
+    _cpfController = TextEditingController();
     _senhaController = TextEditingController();
     _repetirSenhaController = TextEditingController();
     _telefoneController = TextEditingController();
@@ -41,6 +44,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
   void dispose() {
     _nomeController.dispose();
     _emailController.dispose();
+    _cpfController.dispose();
     _senhaController.dispose();
     _repetirSenhaController.dispose();
     _telefoneController.dispose();
@@ -53,9 +57,10 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
       return;
     }
 
-    bool retornoCadastro = await ref.read(loginServiceProvider).registrar(
+    bool retornoCadastro = await ref.read(usuarioServiceProvider).registrar(
           nome: _nomeController.text,
           email: _emailController.text,
+          cpf: _cpfController.text,
           senha: _senhaController.text,
           telefone: _telefoneController.text,
           context: context,
@@ -169,6 +174,29 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             }
             if (!Validador().emailValido(value)) {
               return 'Por favor, informe um e-mail válido';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _cpfController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            BRMasks.cpf,
+          ],
+          decoration: InputDecoration(
+            hintText: "CPF:",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none),
+            fillColor: Colors.grey[200],
+            filled: true,
+            prefixIcon: const Icon(Icons.numbers),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty || value.length < 14) {
+              return 'Por favor, informe o CPF corretamente';
             }
             return null;
           },

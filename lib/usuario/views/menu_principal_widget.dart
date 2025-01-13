@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/diversos/views/menu_lateral.dart';
+import 'package:template_crud_produto/menu/views/menu_lateral.dart';
 
 class MenuPrincipalWidget extends ConsumerStatefulWidget {
   const MenuPrincipalWidget({super.key});

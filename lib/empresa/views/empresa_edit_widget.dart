@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
-import 'package:template_crud_produto/login/services/login_service.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/utils/validador.dart';
 
 class EmpresaEditPage extends ConsumerStatefulWidget {
@@ -215,7 +215,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       String? idUsuarioLogado = await ref
-                          .read(loginServiceProvider)
+                          .read(usuarioServiceProvider)
                           .obterIdUsuarioLogado();
 
                       final empresaNova = empresa.copyWith(

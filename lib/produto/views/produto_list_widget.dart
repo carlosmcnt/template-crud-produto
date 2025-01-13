@@ -6,7 +6,7 @@ import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
-import 'package:template_crud_produto/diversos/views/menu_lateral.dart';
+import 'package:template_crud_produto/menu/views/menu_lateral.dart';
 
 class ProdutoListPage extends ConsumerWidget {
   const ProdutoListPage({super.key, required this.empresa});

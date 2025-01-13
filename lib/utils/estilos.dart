@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Estilos {
-  
-  final ButtonStyle botaoLargo = TextButton.styleFrom(
-      foregroundColor: Colors.white, minimumSize: const Size(88, 44),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18.0),
-      ),
-      backgroundColor: Colors.grey,
-  );
-
+  snackbarStatus(
+      {required String mensagem,
+      required BuildContext context,
+      required bool erro}) {
+    SnackBar snackbar = SnackBar(
+      duration: const Duration(seconds: 3),
+      content: Text(mensagem),
+      backgroundColor: erro ? Colors.red : Colors.green,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  }
 }
