@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
-
 import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/validador.dart';
 
@@ -76,35 +75,47 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _inicio(context),
-                _camposObrigatorios(context),
-                const SizedBox(height: 60),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Já possui uma conta?"),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          "Faça o login",
-                          style:
-                              TextStyle(color: Theme.of(context).primaryColor),
-                        ))
-                  ],
+      backgroundColor: Theme.of(context).shadowColor,
+      body: Padding(
+        padding: const EdgeInsets.all(36),
+        child: Center(
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              scrollbars: false,
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(18),
                 ),
-              ],
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _inicio(context),
+                      _camposObrigatorios(context),
+                      const SizedBox(height: 40),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Já possui uma conta?"),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                "Faça o login",
+                              ))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -115,17 +126,21 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
   _inicio(context) {
     return Column(
       children: [
+        Image.asset(
+          'logo.png',
+          fit: BoxFit.cover,
+          height: 150,
+          width: 150,
+        ),
         const Text(
           "Cadastre-se para continuar!",
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
           ),
         ),
-        Text("Preencha os campos abaixo para criar sua conta",
+        const Text("Preencha os campos abaixo para criar sua conta",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
             )),
         const SizedBox(height: 50),
       ],
@@ -142,7 +157,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.face),
           ),
@@ -164,7 +178,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.email),
           ),
@@ -190,7 +203,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.numbers),
           ),
@@ -210,7 +222,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.password),
             suffixIcon: IconButton(
@@ -241,7 +252,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.password),
           ),
@@ -267,7 +277,6 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.phone),
           ),
@@ -280,11 +289,17 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
         ),
         const SizedBox(height: 20),
         ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            shape: const StadiumBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          ),
           onPressed: () async {
             await cadastrar(context);
           },
           label: const Text('Cadastrar',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
           icon: const Icon(Icons.login),
         ),
       ],

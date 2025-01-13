@@ -5,13 +5,15 @@ import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
+import 'package:template_crud_produto/utils/tema.dart';
 
 class ProdutoEditPage extends ConsumerStatefulWidget {
   final Produto produto;
   final Empresa empresa;
 
-  const ProdutoEditPage({super.key, required this.produto, required this.empresa});
-  
+  const ProdutoEditPage(
+      {super.key, required this.produto, required this.empresa});
+
   @override
   ConsumerState<ProdutoEditPage> createState() {
     return ProdutoEditPageState();
@@ -19,7 +21,6 @@ class ProdutoEditPage extends ConsumerStatefulWidget {
 }
 
 class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
-
   late TextEditingController _descricaoController;
   late TextEditingController _valorController;
   late TextEditingController _tipoController;
@@ -38,9 +39,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   void initState() {
     super.initState();
     _descricaoController = TextEditingController(text: produto.descricao);
-    _valorController = TextEditingController(
-      text: produto.valorUnitario.toString()
-    );
+    _valorController =
+        TextEditingController(text: produto.valorUnitario.toString());
     _tipoController = TextEditingController(text: produto.tipo);
     _saborController = TextEditingController(text: produto.sabor);
     _alergenosController = TextEditingController();
@@ -63,9 +63,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text(produto.id == null ? 'Novo Produto' : 'Editar Produto')),
-      ),
+      appBar: Tema.appBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -74,7 +72,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
             children: [
               TextFormField(
                 controller: _descricaoController,
-                decoration: const InputDecoration(labelText: 'Descrição do produto'),
+                decoration:
+                    const InputDecoration(labelText: 'Descrição do produto'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Descrição é obrigatória';
@@ -132,7 +131,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               ),
               SwitchListTile(
                 title: const Text('Contém glúten?'),
-                value:  _temGlutem,
+                value: _temGlutem,
                 onChanged: (value) {
                   setState(() {
                     _temGlutem = value;
@@ -157,7 +156,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   });
                 },
               ),
-              const Text('Possíveis componentes alérgenos', style: TextStyle(fontSize: 16)),
+              const Text('Possíveis componentes alérgenos',
+                  style: TextStyle(fontSize: 16)),
               Row(
                 children: [
                   Expanded(
@@ -186,7 +186,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               const SizedBox(height: 10),
               const SizedBox(
                 height: 30,
-                child: Text('Alérgenos selecionados:', style: TextStyle(fontSize: 16)),
+                child: Text('Alérgenos selecionados:',
+                    style: TextStyle(fontSize: 16)),
               ),
               Wrap(
                 spacing: 8,
@@ -205,14 +206,14 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-
                   if (!_formKey.currentState!.validate()) {
                     return;
                   }
-                  
+
                   final novoProduto = produto.copyWith(
                     descricao: _descricaoController.text,
-                    valorUnitario: normalizador.normalizarMoeda(_valorController.text),
+                    valorUnitario:
+                        normalizador.normalizarMoeda(_valorController.text),
                     tipo: _tipoController.text,
                     sabor: _saborController.text,
                     temGlutem: _temGlutem,
@@ -229,7 +230,6 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   if (context.mounted) {
                     Navigator.of(context).pop(true);
                   }
-
                 },
                 child: Text(produto.id == null ? 'Cadastrar' : 'Salvar'),
               ),
@@ -239,5 +239,4 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
       ),
     );
   }
-
 }

@@ -1,9 +1,16 @@
 import 'package:br_validators/br_validators.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/empresa/models/empresa.dart';
+import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
+import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
+import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
 import 'package:template_crud_produto/menu/controllers/dados_usuario_controller.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
+import 'package:template_crud_produto/utils/tema.dart';
 
 class DadosUsuario extends ConsumerStatefulWidget {
   const DadosUsuario({super.key, required this.usuario});
@@ -81,9 +88,7 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Dados do Usuário')),
-      ),
+      appBar: Tema.appBar(),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -109,6 +114,9 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                       decoration: const InputDecoration(
                         labelText: 'E-mail',
                       ),
+                      inputFormatters: [
+                        FormatadorLetrasMaiusculas(),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -166,12 +174,94 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                           child: const Text('Cancelar')),
                     ],
                   ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(150, 50),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return verificarEmpresaExistente(context, ref);
+                        },
+                      );
+                    },
+                    child: const Text('Quero ser um vendedor'),
+                  ),
                 ],
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget verificarEmpresaExistente(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<Empresa?>(
+      future:
+          ref.read(menuLateralControllerProvider.notifier).obterEmpresaLogada(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return const Text('Erro ao verificar existência de empresa');
+        } else {
+          if (snapshot.data != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ProdutoListPage(empresa: snapshot.data!),
+                ),
+              );
+            });
+            return const SizedBox.shrink();
+          } else {
+            return dialogoCriacaoEmpresa(context, ref);
+          }
+        }
+      },
+    );
+  }
+
+  AlertDialog dialogoCriacaoEmpresa(BuildContext context, WidgetRef ref) {
+    final usuario =
+        ref.watch(menuLateralControllerProvider).whenData((usuario) => usuario);
+    return AlertDialog(
+      title: const Text('Criação de Empresa'),
+      content: const Text(
+          'Você ainda não possui um perfil de empresa. Deseja criar um agora?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => EmpresaEditPage(
+                  empresa: Empresa(
+                    nomeFantasia: '',
+                    usuarioId: usuario.value!.id!,
+                    chavePix: '',
+                    descricao: '',
+                    logomarca: '',
+                    locaisEntrega: [],
+                    dataCadastro: Timestamp.now(),
+                    dataUltimaAlteracao: Timestamp.now(),
+                  ),
+                ),
+              ),
+            );
+          },
+          child: const Text('Sim'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Não'),
+        ),
+      ],
     );
   }
 }

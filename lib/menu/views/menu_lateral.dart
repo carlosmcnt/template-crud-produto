@@ -1,15 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
-import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/usuario/views/login_widget.dart';
 import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
-import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 
 class MenuLateralWidget extends ConsumerStatefulWidget {
   const MenuLateralWidget({super.key});
@@ -39,17 +35,23 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
 
   Drawer menuLateral(BuildContext context, Usuario? usuario) {
     return Drawer(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(usuario?.nomeCompleto ?? ''),
-            accountEmail: Text(usuario?.email ?? ''),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+            ),
+            accountName: Text(usuario?.nomeCompleto ?? '',
+                style: const TextStyle(fontSize: 20, color: Colors.white)),
+            accountEmail: Text(usuario?.email ?? '',
+                style: const TextStyle(fontSize: 15, color: Colors.white)),
             currentAccountPictureSize: const Size.square(64),
             currentAccountPicture: CircleAvatar(
-              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: Theme.of(context).focusColor,
               child: Text(usuario?.nomeCompleto.substring(0, 1) ?? '',
-                  style: const TextStyle(fontSize: 30.0, color: Colors.blue)),
+                  style: const TextStyle(fontSize: 30, color: Colors.white)),
             ),
           ),
           ListTile(
@@ -76,18 +78,6 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                           dataUltimaAlteracao: usuario.dataUltimaAlteracao,
                         ),
                       )));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.business),
-            title: const Text("Perfil Empresa"),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return verificarEmpresaExistente(context, ref);
-                },
-              );
             },
           ),
           ListTile(
@@ -121,34 +111,6 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
     );
   }
 
-  Widget verificarEmpresaExistente(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<Empresa?>(
-      future:
-          ref.read(menuLateralControllerProvider.notifier).obterEmpresaLogada(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return const Text('Erro ao verificar existência de empresa');
-        } else {
-          if (snapshot.data != null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ProdutoListPage(empresa: snapshot.data!),
-                ),
-              );
-            });
-            return const SizedBox.shrink();
-          } else {
-            return dialogoCriacaoEmpresa(context, ref);
-          }
-        }
-      },
-    );
-  }
-
   AlertDialog dialogoConfirmacaoSaida(BuildContext context, WidgetRef ref) {
     return AlertDialog(
       title: const Text('Saída'),
@@ -160,45 +122,6 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const LoginPage(),
-              ),
-            );
-          },
-          child: const Text('Sim'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Não'),
-        ),
-      ],
-    );
-  }
-
-  AlertDialog dialogoCriacaoEmpresa(BuildContext context, WidgetRef ref) {
-    final usuario =
-        ref.watch(menuLateralControllerProvider).whenData((usuario) => usuario);
-    return AlertDialog(
-      title: const Text('Criação de Empresa'),
-      content: const Text(
-          'Você ainda não possui um perfil de empresa. Deseja criar um agora?'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => EmpresaEditPage(
-                  empresa: Empresa(
-                    nomeFantasia: '',
-                    usuarioId: usuario.value!.id!,
-                    chavePix: '',
-                    descricao: '',
-                    logomarca: '',
-                    locaisEntrega: [],
-                    dataCadastro: Timestamp.now(),
-                    dataUltimaAlteracao: Timestamp.now(),
-                  ),
-                ),
               ),
             );
           },

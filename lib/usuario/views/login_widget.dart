@@ -59,22 +59,34 @@ class LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: Theme.of(context).shadowColor,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(36),
         child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _inicio(context),
-                _camposObrigatorios(context),
-                _senhaEsquecida(context),
-                _cadastro(context),
-              ],
+          child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _inicio(context),
+                      _camposObrigatorios(context),
+                      _senhaEsquecida(context),
+                      _cadastro(context),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -97,6 +109,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
           },
           child: const Text('Cadastre-se'),
         ),
+        const SizedBox(height: 80),
       ],
     );
   }
@@ -120,18 +133,23 @@ class LoginPageState extends ConsumerState<LoginPage> {
   _inicio(context) {
     return Column(
       children: [
+        Image.asset(
+          'logo.png',
+          fit: BoxFit.cover,
+          height: 150,
+          width: 150,
+        ),
         const Text(
-          "Bem vindo ao app Pegue o Doce",
+          "Bem vindo ao app Pegue o Doce!",
           style: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
           ),
         ),
-        Text("Faça login para continuar",
+        const Text("Faça login para continuar",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
             )),
+        const SizedBox(height: 30),
       ],
     );
   }
@@ -147,7 +165,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.email_outlined),
           ),
@@ -161,13 +178,11 @@ class LoginPageState extends ConsumerState<LoginPage> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none),
-            fillColor: Colors.grey[200],
             filled: true,
             prefixIcon: const Icon(Icons.password),
             suffixIcon: IconButton(
               icon: Icon(
                 senhaVisivel ? Icons.visibility : Icons.visibility_off,
-                color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
                 setState(() {
@@ -186,10 +201,17 @@ class LoginPageState extends ConsumerState<LoginPage> {
           onPressed: () async {
             await realizarLogin(context);
           },
-          label: const Text('Entrar',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          icon: const Icon(Icons.login),
+          label: const Text(
+            'Entrar',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          icon: const Icon(
+            Icons.login,
+          ),
         ),
+        const SizedBox(height: 30),
       ],
     );
   }

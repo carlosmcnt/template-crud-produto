@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
+import 'package:template_crud_produto/utils/tema.dart';
 import 'package:template_crud_produto/utils/validador.dart';
 
 class EmpresaEditPage extends ConsumerStatefulWidget {
@@ -51,11 +52,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-            child:
-                Text(empresa.id == null ? 'Criar Empresa' : 'Alterar Empresa')),
-      ),
+      appBar: Tema.appBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Center(

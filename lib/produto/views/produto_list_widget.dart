@@ -7,6 +7,7 @@ import 'package:template_crud_produto/produto/controllers/produto_list_controlle
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
 import 'package:template_crud_produto/menu/views/menu_lateral.dart';
+import 'package:template_crud_produto/utils/tema.dart';
 
 class ProdutoListPage extends ConsumerWidget {
   const ProdutoListPage({super.key, required this.empresa});
@@ -29,10 +30,7 @@ class ProdutoListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final produtoList = ref.watch(produtoListControllerProvider);
     return Scaffold(
-      appBar: AppBar(
-        title:
-            Center(child: Text('Lista de Produtos - ${empresa.nomeFantasia}')),
-      ),
+      appBar: Tema.appBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final saved = await Navigator.of(context).push(
