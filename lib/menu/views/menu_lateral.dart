@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
@@ -21,40 +21,23 @@ class MenuLateralWidget extends ConsumerStatefulWidget {
 }
 
 class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
-  Usuario? usuario;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeUsuario();
-  }
-
-  Future<void> _initializeUsuario() async {
-    try {
-      final user = await ref.read(usuarioServiceProvider).obterUsuarioLogado();
-      if (user != null) {
-        setState(() {
-          usuario = user;
-        });
-      }
-    } catch (e) {
-      throw Exception('Erro ao obter usuário logado: $e');
-    }
-  }
-
-  Future<Empresa?> pesquisarEmpresaPorUsuario() async {
-    Empresa? empresa = await ref
-        .read(empresaServiceProvider)
-        .obterEmpresaPorUsuarioId(usuario!.id!);
-    return empresa;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return menuLateral(context);
+    final usuarioLogado = ref.watch(menuLateralControllerProvider);
+
+    return usuarioLogado.when(
+      loading: () => const CircularProgressIndicator(),
+      error: (error, stackTrace) => Text('Erro ao carregar usuário: $error'),
+      data: (usuario) {
+        if (usuario == null) {
+          return const Text('Nenhum usuário logado');
+        }
+        return menuLateral(context, usuario);
+      },
+    );
   }
 
-  Drawer menuLateral(BuildContext context) {
+  Drawer menuLateral(BuildContext context, Usuario? usuario) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -86,11 +69,11 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                   builder: (context) => DadosUsuario(
                         usuario: Usuario(
                           nomeCompleto: usuario!.nomeCompleto,
-                          email: usuario!.email,
-                          cpf: usuario!.cpf,
-                          telefone: usuario!.telefone,
-                          dataCadastro: usuario!.dataCadastro,
-                          dataUltimaAlteracao: usuario!.dataUltimaAlteracao,
+                          email: usuario.email,
+                          cpf: usuario.cpf,
+                          telefone: usuario.telefone,
+                          dataCadastro: usuario.dataCadastro,
+                          dataUltimaAlteracao: usuario.dataUltimaAlteracao,
                         ),
                       )));
             },
@@ -140,7 +123,8 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
 
   Widget verificarEmpresaExistente(BuildContext context, WidgetRef ref) {
     return FutureBuilder<Empresa?>(
-      future: pesquisarEmpresaPorUsuario(),
+      future:
+          ref.read(menuLateralControllerProvider.notifier).obterEmpresaLogada(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -192,6 +176,8 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
   }
 
   AlertDialog dialogoCriacaoEmpresa(BuildContext context, WidgetRef ref) {
+    final usuario =
+        ref.watch(menuLateralControllerProvider).whenData((usuario) => usuario);
     return AlertDialog(
       title: const Text('Criação de Empresa'),
       content: const Text(
@@ -204,7 +190,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                 builder: (context) => EmpresaEditPage(
                   empresa: Empresa(
                     nomeFantasia: '',
-                    usuarioId: usuario!.id!,
+                    usuarioId: usuario.value!.id!,
                     chavePix: '',
                     descricao: '',
                     logomarca: '',
