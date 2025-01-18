@@ -1,14 +1,21 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 
 part 'empresa_edit_controller.g.dart';
 
 @riverpod
-class EmpresaEditController extends _$EmpresaEditController{
-
+class EmpresaEditController extends _$EmpresaEditController {
   @override
-  Future<Empresa> build(Empresa empresa) async {
+  FutureOr<Empresa> build(Empresa empresa) async {
+    state = const AsyncValue.loading();
+    final usuarioLogado =
+        await ref.read(usuarioServiceProvider).obterUsuarioLogado();
+    final empresa = await ref
+        .read(empresaServiceProvider)
+        .obterEmpresaPorUsuarioId(usuarioLogado!.id!);
+    state = AsyncValue.data(empresa!);
     return empresa;
   }
 
@@ -28,5 +35,4 @@ class EmpresaEditController extends _$EmpresaEditController{
       return result;
     });
   }
-
 }

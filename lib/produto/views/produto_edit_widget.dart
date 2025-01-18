@@ -71,9 +71,17 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
           child: ListView(
             children: [
               TextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: 5,
+                minLines: 3,
+                maxLength: 200,
                 controller: _descricaoController,
-                decoration:
-                    const InputDecoration(labelText: 'Descrição do produto'),
+                decoration: InputDecoration(
+                  labelText: 'Descrição do produto:',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.description),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Descrição é obrigatória';
@@ -83,8 +91,11 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               ),
               TextFormField(
                 controller: _valorController,
-                decoration: const InputDecoration(
-                  labelText: 'Valor Unitário',
+                decoration: InputDecoration(
+                  labelText: 'Valor Unitário:',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.attach_money),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -101,12 +112,16 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _tipoController,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo do produto',
+                decoration: InputDecoration(
+                  labelText: 'Tipo do produto:',
                   hintText: 'Ex: Bolo, Torta, Salgado',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.emoji_food_beverage_rounded),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -115,12 +130,16 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _saborController,
-                decoration: const InputDecoration(
-                  labelText: 'Sabor do produto',
+                decoration: InputDecoration(
+                  labelText: 'Sabor do produto:',
                   hintText: 'Ex: Chocolate, Morango, Ninho',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  prefixIcon: const Icon(Icons.food_bank_rounded),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -129,9 +148,12 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
               SwitchListTile(
                 title: const Text('Contém glúten?'),
                 value: _temGlutem,
+                thumbIcon: WidgetStateProperty.all(
+                    const Icon(Icons.breakfast_dining_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _temGlutem = value;
@@ -141,6 +163,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               SwitchListTile(
                 title: const Text('Contém lactose?'),
                 value: _temLactose,
+                thumbIcon: WidgetStateProperty.all(
+                    const Icon(Icons.local_drink_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _temLactose = value;
@@ -150,22 +174,27 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               SwitchListTile(
                 title: const Text('É vegano?'),
                 value: _vegano,
+                thumbIcon: WidgetStateProperty.all(
+                    const Icon(Icons.emoji_nature_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _vegano = value;
                   });
                 },
               ),
-              const Text('Possíveis componentes alérgenos',
+              const Text('Possíveis componentes alérgenos:',
                   style: TextStyle(fontSize: 16)),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       controller: _alergenosController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Ex: Amendoim, Castanhas, Soja',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        prefixIcon: const Icon(Icons.medical_services_outlined),
                       ),
                     ),
                   ),

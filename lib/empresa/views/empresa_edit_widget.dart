@@ -1,11 +1,12 @@
 import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/empresa/controllers/empresa_edit_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 import 'package:template_crud_produto/utils/validador.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 
 class EmpresaEditPage extends ConsumerStatefulWidget {
   final Empresa empresa;
@@ -49,6 +50,22 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
     super.dispose();
   }
 
+  atualizarChavePix(usuarioLogado) {
+    switch (tipoChavePix) {
+      case 'CPF':
+        _chavePixController.text = usuarioLogado!.cpf;
+        break;
+      case 'Telefone':
+        _chavePixController.text = usuarioLogado!.telefone;
+        break;
+      case 'E-mail':
+        _chavePixController.text = usuarioLogado!.email;
+        break;
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +92,9 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     }
                     return null;
                   },
+                  inputFormatters: [
+                    FormatadorLetrasMaiusculas(),
+                  ],
                 ),
                 const SizedBox(height: 15),
                 DropdownButtonFormField(
@@ -114,13 +134,15 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                         borderRadius: BorderRadius.circular(10)),
                     prefixIcon: const Icon(Icons.monetization_on),
                   ),
+                  enabled: !checkboxMarcado,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty && !checkboxMarcado) {
                       return 'O valor da chave é obrigatório';
                     }
                     if (validador.validarChavePixSelecionada(
-                            value, tipoChavePix) ==
-                        false) {
+                                value, tipoChavePix) ==
+                            false &&
+                        !checkboxMarcado) {
                       return 'Chave PIX inválida';
                     }
                     return null;
@@ -211,21 +233,26 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      String? idUsuarioLogado = await ref
+                      final usuarioLogado = await ref
                           .read(usuarioServiceProvider)
-                          .obterIdUsuarioLogado();
+                          .obterUsuarioLogado();
+
+                      if (checkboxMarcado) {
+                        atualizarChavePix(usuarioLogado);
+                      }
 
                       final empresaNova = empresa.copyWith(
                         nomeFantasia: _nomeFantasiaController.text,
                         chavePix: _chavePixController.text,
                         descricao: _descricaoController.text,
                         locaisEntrega: _locaisEntrega,
-                        usuarioId: idUsuarioLogado!,
+                        usuarioId: usuarioLogado!.id,
                       );
 
                       await ref
-                          .read(empresaServiceProvider)
-                          .criarEmpresa(empresaNova);
+                          .read(empresaEditControllerProvider(empresaNova)
+                              .notifier)
+                          .inserirOuAtualizarEmpresa(empresaNova);
 
                       if (context.mounted) {
                         Navigator.of(context).pop(true);
@@ -253,13 +280,12 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                 if (value != null) {
                   setState(() {
                     checkboxMarcado = value;
-                    _chavePixController.dispose();
                   });
                 }
               },
               tristate: false,
               value: checkboxMarcado,
-              activeColor: const Color(0xFF6200EE),
+              activeColor: Theme.of(context).primaryColor,
             ),
             const Text(
               'Usar chave do meu usuário',

@@ -104,6 +104,9 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                     decoration: const InputDecoration(
                       labelText: 'Nome',
                     ),
+                    inputFormatters: [
+                      FormatadorLetrasMaiusculas(),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Tooltip(
@@ -114,9 +117,6 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                       decoration: const InputDecoration(
                         labelText: 'E-mail',
                       ),
-                      inputFormatters: [
-                        FormatadorLetrasMaiusculas(),
-                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -175,54 +175,57 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                     ],
                   ),
                   const SizedBox(height: 40),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(150, 50),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return verificarEmpresaExistente(context, ref);
-                        },
-                      );
-                    },
-                    child: const Text('Quero ser um vendedor'),
-                  ),
+                  FutureBuilder<Empresa?>(
+                      future: ref
+                          .read(menuLateralControllerProvider.notifier)
+                          .obterEmpresaLogada(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return const Text(
+                              'Erro ao verificar existência de empresa');
+                        } else {
+                          if (snapshot.data != null) {
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(150, 50),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => ProdutoListPage(
+                                        empresa: snapshot.data!),
+                                  ),
+                                );
+                              },
+                              child: const Text('Acessar minha loja'),
+                            );
+                          } else {
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(150, 50),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return dialogoCriacaoEmpresa(context, ref);
+                                  },
+                                );
+                              },
+                              child: const Text('Quero ser um vendedor'),
+                            );
+                          }
+                        }
+                      }),
                 ],
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget verificarEmpresaExistente(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<Empresa?>(
-      future:
-          ref.read(menuLateralControllerProvider.notifier).obterEmpresaLogada(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return const Text('Erro ao verificar existência de empresa');
-        } else {
-          if (snapshot.data != null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ProdutoListPage(empresa: snapshot.data!),
-                ),
-              );
-            });
-            return const SizedBox.shrink();
-          } else {
-            return dialogoCriacaoEmpresa(context, ref);
-          }
-        }
-      },
     );
   }
 

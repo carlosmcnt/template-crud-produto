@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
+import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/usuario/views/login_widget.dart';
@@ -34,6 +36,8 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
   }
 
   Drawer menuLateral(BuildContext context, Usuario? usuario) {
+    final empresa =
+        ref.read(menuLateralControllerProvider.notifier).obterEmpresaLogada();
     return Drawer(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: ListView(
@@ -78,6 +82,29 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                           dataUltimaAlteracao: usuario.dataUltimaAlteracao,
                         ),
                       )));
+            },
+          ),
+          FutureBuilder<Empresa?>(
+            future: empresa,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Erro ao carregar informação: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data == null) {
+                return const SizedBox.shrink();
+              } else {
+                return ListTile(
+                  leading: const Icon(Icons.store),
+                  title: const Text("Perfil Empresa"),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ProdutoListPage(empresa: snapshot.data!),
+                    ));
+                  },
+                );
+              }
             },
           ),
           ListTile(

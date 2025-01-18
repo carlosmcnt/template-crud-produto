@@ -16,9 +16,9 @@ class DadosUsuarioController extends _$DadosUsuarioController {
   }
 
   Future<void> atualizarUsuario(Usuario usuario) async {
-    final loginService = ref.read(usuarioServiceProvider);
+    final usuarioService = ref.read(usuarioServiceProvider);
     state = const AsyncValue.loading();
-    await loginService.atualizarUsuario(usuario);
+    await usuarioService.atualizarUsuario(usuario);
     state = await AsyncValue.guard(() => Future.value(usuario));
   }
 }

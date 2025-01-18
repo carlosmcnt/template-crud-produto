@@ -25,6 +25,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
   bool senhaVisivel = false;
   bool repetirSenhaVisivel = false;
   bool autoValidate = false;
+  bool desabilitarBotao = false;
   late String nomeArquivo = 'Nenhuma foto selecionada';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -56,14 +57,21 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
       return;
     }
 
-    bool retornoCadastro = await ref.read(usuarioServiceProvider).registrar(
+    setState(() => desabilitarBotao = true);
+
+    bool retornoCadastro = await ref
+        .read(usuarioServiceProvider)
+        .registrar(
           nome: _nomeController.text,
           email: _emailController.text,
           cpf: _cpfController.text,
           senha: _senhaController.text,
           telefone: _telefoneController.text,
           context: context,
-        );
+        )
+        .whenComplete(() {
+      setState(() => desabilitarBotao = false);
+    });
 
     if (!context.mounted) return;
 
@@ -293,9 +301,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           ),
-          onPressed: () async {
-            await cadastrar(context);
-          },
+          onPressed: desabilitarBotao ? null : () => cadastrar(context),
           label: const Text('Cadastrar',
               style: TextStyle(
                 fontWeight: FontWeight.bold,

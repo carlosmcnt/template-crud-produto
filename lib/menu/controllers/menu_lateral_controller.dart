@@ -21,6 +21,9 @@ class MenuLateralController extends _$MenuLateralController {
     final usuario = state.value;
     final empresaService = ref.read(empresaServiceProvider);
     final empresa = await empresaService.obterEmpresaPorUsuarioId(usuario!.id!);
-    return empresa;
+    if (empresa != null) {
+      return empresa;
+    }
+    return null;
   }
 }
