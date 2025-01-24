@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 class Cores {
   // Paleta de cores para o modo claro
   static const Color primaryLight = Color(0xFFFFC107);
-  static const Color accentLight = Color(0xFFFF4081);
-  static const Color backgroundLight = Color(0xFFFAFABA);
+  static const Color accentLight = Color.fromARGB(255, 224, 52, 75);
+  static const Color backgroundLight = Color.fromARGB(255, 250, 250, 250);
   static const Color textPrimaryLight = Color(0xFF4E342E);
   static const Color textSecondaryLight = Color(0xFF000000);
   static const Color shadowLight = Color(0xFFFFD740);
@@ -13,7 +13,7 @@ class Cores {
 
   // Paleta de cores para o modo escuro
   static const Color primaryDark = Color(0xFFFFC107);
-  static const Color accentDark = Color(0xFFFF4081);
+  static const Color accentDark = Colors.red;
   static const Color backgroundDark = Color(0xFF303030);
   static const Color textPrimaryDark = Colors.white70;
   static const Color textSecondaryDark = Colors.white60;
@@ -137,6 +137,20 @@ class Tema {
         labelStyle: TextStyle(color: textPrimaryColor),
         prefixIconColor: accentColor,
         suffixIconColor: accentColor,
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: textSecondaryColor),
+        ),
+      ),
+      cardTheme: CardTheme(
+        color: backgroundColor,
+        surfaceTintColor: Colors.redAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: accentColor,
+            width: 3,
+          ),
+        ),
       ),
       iconTheme: IconThemeData(color: accentColor),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
