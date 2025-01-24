@@ -1,3 +1,4 @@
+import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 
 class Validador {
@@ -20,6 +21,10 @@ class Validador {
         return emailValido(valorChave);
       case 'Chave Aleatória':
         return valorChave.length == 32;
+      case 'CPF':
+        return BRValidators.validateCPF(valorChave);
+      case 'CNPJ':
+        return BRValidators.validateCNPJ(valorChave);
       default:
         return false;
     }
@@ -27,29 +32,29 @@ class Validador {
 
   listaTiposChavesPix() {
     return [
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: '',
-        child: Text(''),
+        label: '',
       ),
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: 'CPF',
-        child: Text('CPF'),
+        label: 'CPF',
       ),
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: 'CNPJ',
-        child: Text('CNPJ'),
+        label: 'CNPJ',
       ),
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: 'E-mail',
-        child: Text('E-mail'),
+        label: 'E-mail',
       ),
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: 'Telefone',
-        child: Text('Telefone'),
+        label: 'Telefone',
       ),
-      const DropdownMenuItem(
+      const DropdownMenuEntry(
         value: 'Chave Aleatória',
-        child: Text('Chave Aleatória'),
+        label: 'Chave Aleatória',
       ),
     ];
   }
