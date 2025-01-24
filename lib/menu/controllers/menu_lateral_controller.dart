@@ -9,11 +9,11 @@ part 'menu_lateral_controller.g.dart';
 @riverpod
 class MenuLateralController extends _$MenuLateralController {
   @override
-  FutureOr<Usuario?> build() async {
+  Future<Usuario> build() async {
     state = const AsyncValue.loading();
     final usuarioLogado =
         await ref.read(usuarioServiceProvider).obterUsuarioLogado();
-    state = AsyncValue.data(usuarioLogado!);
+    state = AsyncValue.data(usuarioLogado);
     return usuarioLogado;
   }
 

@@ -7,8 +7,8 @@ import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
-import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
 import 'package:template_crud_produto/menu/controllers/dados_usuario_controller.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
@@ -62,10 +62,13 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
             );
 
             await ref
-                .read(dadosUsuarioControllerProvider(novoUsuario).notifier)
+                .read(dadosUsuarioControllerProvider.notifier)
                 .atualizarUsuario(novoUsuario);
 
             if (!context.mounted) return;
+
+            ref.invalidate(menuLateralControllerProvider);
+            ref.invalidate(dadosUsuarioControllerProvider);
 
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
@@ -77,6 +80,8 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
         ),
         TextButton(
           onPressed: () {
+            _nomeController.text = usuario.nomeCompleto;
+            _telefoneController.text = usuario.telefone;
             Navigator.of(context).pop();
           },
           child: const Text('Não'),
@@ -128,9 +133,9 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                       decoration: const InputDecoration(
                         labelText: 'CPF',
                       ),
-                      inputFormatters: [
-                        BRMasks.cpf,
-                      ],
+                      validator: (value) => BRValidators.validateCPF(value!)
+                          ? null
+                          : 'CPF inválido',
                     ),
                   ),
                   const SizedBox(height: 10),

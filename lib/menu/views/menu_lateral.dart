@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
+import 'package:template_crud_produto/empresa/views/info_empresa.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
-import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/usuario/views/login_widget.dart';
@@ -27,9 +27,6 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
       loading: () => const CircularProgressIndicator(),
       error: (error, stackTrace) => Text('Erro ao carregar usuário: $error'),
       data: (usuario) {
-        if (usuario == null) {
-          return const Text('Nenhum usuário logado');
-        }
         return menuLateral(context, usuario);
       },
     );
@@ -45,13 +42,20 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
         children: <Widget>[
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).hintColor,
             ),
-            accountName: Text(usuario?.nomeCompleto ?? '',
-                style: const TextStyle(fontSize: 20, color: Colors.white)),
+            accountName: SizedBox(
+              child: Text(
+                usuario?.nomeCompleto ?? '',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
             accountEmail: Text(usuario?.email ?? '',
                 style: const TextStyle(fontSize: 15, color: Colors.white)),
-            currentAccountPictureSize: const Size.square(64),
+            currentAccountPictureSize: const Size.square(60),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Theme.of(context).focusColor,
               child: Text(usuario?.nomeCompleto.substring(0, 1) ?? '',
@@ -100,7 +104,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
-                          ProdutoListPage(empresa: snapshot.data!),
+                          InfoEmpresaPage(empresa: snapshot.data!),
                     ));
                   },
                 );

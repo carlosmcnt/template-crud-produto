@@ -7,18 +7,36 @@ part 'dados_usuario_controller.g.dart';
 @riverpod
 class DadosUsuarioController extends _$DadosUsuarioController {
   @override
-  FutureOr<Usuario> build(Usuario usuario) async {
+  Future<Usuario> build() async {
     state = const AsyncValue.loading();
-    final usuarioLogado =
-        await ref.read(usuarioServiceProvider).obterUsuarioLogado();
-    state = AsyncValue.data(usuarioLogado!);
-    return usuarioLogado;
+    try {
+      final usuario =
+          await ref.read(usuarioServiceProvider).obterUsuarioLogado();
+      state = AsyncValue.data(usuario);
+      return usuario;
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+      rethrow;
+    }
+  }
+
+  Future<void> verificarEstado() async {
+    state = const AsyncValue.loading();
+    try {
+      final usuario =
+          await ref.read(usuarioServiceProvider).obterUsuarioLogado();
+      state = AsyncValue.data(usuario);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
   Future<void> atualizarUsuario(Usuario usuario) async {
     final usuarioService = ref.read(usuarioServiceProvider);
     state = const AsyncValue.loading();
     await usuarioService.atualizarUsuario(usuario);
-    state = await AsyncValue.guard(() => Future.value(usuario));
+    state = await AsyncValue.guard(() async {
+      return ref.read(usuarioServiceProvider).obterUsuarioLogado();
+    });
   }
 }
