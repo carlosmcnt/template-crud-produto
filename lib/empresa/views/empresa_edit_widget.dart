@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/controllers/empresa_edit_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
+import 'package:template_crud_produto/empresa/views/info_empresa.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 import 'package:template_crud_produto/utils/validador.dart';
@@ -29,6 +30,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var tipoChavePix = '';
   bool checkboxMarcado = false;
+  bool campoDesabilitado = true;
 
   Empresa get empresa => widget.empresa;
 
@@ -39,6 +41,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
     _chavePixController = TextEditingController(text: empresa.chavePix);
     _descricaoController = TextEditingController(text: empresa.descricao);
     _locaisEntregaController = TextEditingController();
+
     _locaisEntrega = List<String>.from(empresa.locaisEntrega);
   }
 
@@ -97,6 +100,21 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                   ],
                 ),
                 const SizedBox(height: 15),
+                DropdownMenu<String>(
+                  label: const Text('Tipo de chave PIX:'),
+                  leadingIcon: const Icon(Icons.key),
+                  dropdownMenuEntries: validador.listaTiposChavesPix(),
+                  width: MediaQuery.sizeOf(context).width,
+                  onSelected: (value) {
+                    setState(() {
+                      tipoChavePix = value!;
+                      checkboxMarcado = false;
+                      campoDesabilitado = !campoDesabilitado;
+                    });
+                  },
+                  enableSearch: false,
+                ),
+                /*
                 DropdownButtonFormField(
                   items: validador.listaTiposChavesPix(),
                   value: tipoChavePix,
@@ -116,6 +134,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     });
                   },
                 ),
+                */
                 const SizedBox(height: 15),
                 Center(
                   child: tipoChavePix == 'CPF' ||
@@ -127,12 +146,19 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                 TextFormField(
                   controller: _chavePixController,
                   maxLength: 32,
-                  readOnly: !checkboxMarcado,
+                  readOnly: campoDesabilitado,
                   decoration: InputDecoration(
                     labelText: 'Valor da chave PIX:',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
                     prefixIcon: const Icon(Icons.monetization_on),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      tooltip: 'Limpar campo',
+                      onPressed: () {
+                        _chavePixController.clear();
+                      },
+                    ),
                   ),
                   enabled: !checkboxMarcado,
                   validator: (value) {
@@ -148,14 +174,8 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     return null;
                   },
                   inputFormatters: () {
-                    if (tipoChavePix == 'CPF') {
-                      return [BRMasks.cpf];
-                    } else if (tipoChavePix == 'CNPJ') {
-                      return [BRMasks.cnpj];
-                    } else if (tipoChavePix == 'Telefone') {
+                    if (tipoChavePix == 'Telefone') {
                       return [BRMasks.mobilePhone];
-                    } else {
-                      return null;
                     }
                   }(),
                 ),
@@ -246,20 +266,27 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                         chavePix: _chavePixController.text,
                         descricao: _descricaoController.text,
                         locaisEntrega: _locaisEntrega,
-                        usuarioId: usuarioLogado!.id,
+                        usuarioId: usuarioLogado.id,
                       );
 
                       await ref
-                          .read(empresaEditControllerProvider(empresaNova)
-                              .notifier)
+                          .read(empresaEditControllerProvider.notifier)
                           .inserirOuAtualizarEmpresa(empresaNova);
 
-                      if (context.mounted) {
-                        Navigator.of(context).pop(true);
-                      }
+                      if (!context.mounted) return;
+
+                      ref.invalidate(empresaEditControllerProvider);
+
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => InfoEmpresaPage(
+                            empresa: empresaNova,
+                          ),
+                        ),
+                      );
                     }
                   },
-                  child: Text(empresa.id == null ? 'Cadastrar' : 'Salvar'),
+                  child: Text(empresa.id == null ? 'Cadastrar' : 'Atualizar'),
                 ),
               ],
             ),

@@ -8,13 +8,13 @@ part 'empresa_edit_controller.g.dart';
 @riverpod
 class EmpresaEditController extends _$EmpresaEditController {
   @override
-  FutureOr<Empresa> build(Empresa empresa) async {
+  Future<Empresa> build() async {
     state = const AsyncValue.loading();
     final usuarioLogado =
         await ref.read(usuarioServiceProvider).obterUsuarioLogado();
     final empresa = await ref
         .read(empresaServiceProvider)
-        .obterEmpresaPorUsuarioId(usuarioLogado!.id!);
+        .obterEmpresaPorUsuarioId(usuarioLogado.id!);
     state = AsyncValue.data(empresa!);
     return empresa;
   }

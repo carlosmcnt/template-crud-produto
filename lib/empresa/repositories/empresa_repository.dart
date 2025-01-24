@@ -7,14 +7,12 @@ import 'package:template_crud_produto/firebase/firebase.dart';
 part 'empresa_repository.g.dart';
 
 class EmpresaRepository {
-
   final FirebaseFirestore _firestore;
 
   EmpresaRepository(this._firestore);
 
   Future<Empresa?> obterEmpresaPorId(String id) async {
-    final snapshot =
-        await _firestore.collection('empresas').doc(id).get();
+    final snapshot = await _firestore.collection('empresas').doc(id).get();
     if (snapshot.exists) {
       return Empresa.fromDocument(snapshot);
     }
@@ -34,7 +32,10 @@ class EmpresaRepository {
   }
 
   Future<void> atualizarEmpresa(Empresa empresa) async {
-    await _firestore.collection('empresas').doc(empresa.id).update(empresa.toMap());
+    await _firestore
+        .collection('empresas')
+        .doc(empresa.id)
+        .update(empresa.toMap());
   }
 
   Future<void> deletarEmpresa(String id) async {
@@ -51,7 +52,6 @@ class EmpresaRepository {
     }
     return null;
   }
-
 }
 
 @riverpod
