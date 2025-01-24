@@ -50,15 +50,18 @@ class UsuarioRepository {
     return null;
   }
 
-  Future<Usuario?> obterUsuarioAtual() async {
+  Future<Usuario> obterUsuarioAtual() async {
     final user = _auth.currentUser;
     if (user != null) {
       final doc = await _firestore.collection('usuarios').doc(user.uid).get();
       if (doc.exists) {
         return Usuario.fromFirebase(user, doc.data()!);
+      } else {
+        return Usuario.fromFirebase(user, {});
       }
     }
-    return null;
+    throw FirebaseAuthException(
+        code: 'user-not-found', message: 'Usuário não encontrado');
   }
 
   Future<void> sair() async {

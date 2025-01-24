@@ -76,7 +76,7 @@ class UsuarioService {
     return await usuarioRepository.obterIdUsuarioLogado();
   }
 
-  Future<Usuario?> obterUsuarioLogado() async {
+  Future<Usuario> obterUsuarioLogado() async {
     return await usuarioRepository.obterUsuarioAtual();
   }
 

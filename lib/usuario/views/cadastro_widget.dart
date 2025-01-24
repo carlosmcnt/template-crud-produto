@@ -1,6 +1,5 @@
 import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
@@ -215,8 +214,11 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             prefixIcon: const Icon(Icons.numbers),
           ),
           validator: (value) {
-            if (value == null || value.isEmpty || value.length < 14) {
+            if (value == null || value.isEmpty) {
               return 'Por favor, informe o CPF corretamente';
+            }
+            if (!BRValidators.validateCPF(value)) {
+              return 'Por favor, informe um CPF válido';
             }
             return null;
           },
@@ -278,7 +280,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
           controller: _telefoneController,
           keyboardType: TextInputType.phone,
           inputFormatters: [
-            MaskedInputFormatter('(##)#####-####'),
+            BRMasks.mobilePhone,
           ],
           decoration: InputDecoration(
             hintText: "Telefone:",
