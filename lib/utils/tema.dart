@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 // Definição de paletas de cores
 class Cores {
   // Paleta de cores para o modo claro
-  static const Color primaryLight = Color(0xFFFFC107);
-  static const Color accentLight = Color.fromARGB(255, 224, 52, 75);
+  static const Color primaryLight = Color(0xFFD50000);
+  static const Color accentLight = Color(0xFFFF1744);
   static const Color backgroundLight = Color.fromARGB(255, 250, 250, 250);
   static const Color textPrimaryLight = Color(0xFF4E342E);
-  static const Color textSecondaryLight = Color(0xFF000000);
-  static const Color shadowLight = Color(0xFFFFD740);
+  static const Color textSecondaryLight = Color(0xFFFF5252);
+  static const Color shadowLight = Color.fromARGB(255, 198, 74, 74);
   static const Color inputBackgroundLight = Colors.white;
 
   // Paleta de cores para o modo escuro
@@ -143,7 +143,6 @@ class Tema {
       ),
       cardTheme: CardTheme(
         color: backgroundColor,
-        surfaceTintColor: Colors.redAccent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
@@ -168,18 +167,19 @@ class Tema {
       title: Image.asset(
         'logo.png',
         fit: BoxFit.cover,
-        height: 100,
+        height: 90,
       ),
     );
   }
 
   static AppBar appBar() {
     return AppBar(
+      toolbarHeight: const Size.fromHeight(70).height,
       centerTitle: true,
       title: Image.asset(
         'logo.png',
         fit: BoxFit.cover,
-        height: 100,
+        height: 90,
       ),
     );
   }

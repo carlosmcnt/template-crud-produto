@@ -109,13 +109,15 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          const Text("Já possui uma conta?"),
+                          const Text("Já possui uma conta?",
+                              textAlign: TextAlign.center),
                           TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
                               child: const Text(
                                 "Faça o login",
+                                textAlign: TextAlign.center,
                               ))
                         ],
                       ),
@@ -134,10 +136,10 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
     return Column(
       children: [
         Image.asset(
-          'logo.png',
+          'logo-nome.png',
           fit: BoxFit.cover,
-          height: 150,
-          width: 150,
+          height: 250,
+          width: 250,
         ),
         const Text(
           "Cadastre-se para continuar!",
@@ -145,7 +147,9 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
             fontSize: 20,
           ),
         ),
+        const SizedBox(height: 10),
         const Text("Preencha os campos abaixo para criar sua conta",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
             )),

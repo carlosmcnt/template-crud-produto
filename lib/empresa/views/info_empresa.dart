@@ -47,20 +47,23 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
       appBar: Tema.appBar(),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.business),
-                          trailing: const Icon(Icons.business),
-                          title: Text(
+        child: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              child: Column(
+                children: [
+                  Card(
+                    color: Colors.red[200],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.business,
+                            size: 50,
+                            color: Colors.black,
+                          ),
+                          Text(
                             empresa.nomeFantasia,
                             style: const TextStyle(
                               fontSize: 24,
@@ -68,86 +71,99 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          subtitle: Text(
+                          Text(
                             empresa.descricao,
                             textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProdutoEditPage(
-                          produto: Produto(
-                            descricao: '',
-                            valorUnitario: 0.0,
-                            tipo: '',
-                            sabor: '',
-                            temGlutem: false,
-                            temLactose: false,
-                            vegano: false,
-                            alergenos: [],
-                            empresaId: empresa.id!,
-                            dataCadastro: Timestamp.now(),
-                            dataUltimaAlteracao: Timestamp.now(),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ProdutoEditPage(
+                              produto: Produto(
+                                descricao: '',
+                                valorUnitario: 0.0,
+                                tipo: '',
+                                sabor: '',
+                                temGlutem: false,
+                                temLactose: false,
+                                vegano: false,
+                                alergenos: [],
+                                empresaId: empresa.id!,
+                                dataCadastro: Timestamp.now(),
+                                dataUltimaAlteracao: Timestamp.now(),
+                              ),
+                              empresa: empresa,
+                            ),
                           ),
-                          empresa: empresa,
-                        ),
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(200, 50),
+                      ),
+                      label: const Text('Adicionar Produto')),
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => EmpresaEditPage(
+                              empresa: empresa,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.edit),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(200, 50),
+                      ),
+                      label: const Text('Alterar Empresa')),
+                  const SizedBox(height: 20),
+                  listaProdutos.when(data: (produtos) {
+                    final produtosAgrupados = agruparProdutosPorTipo(produtos);
+                    return ListView(
+                      shrinkWrap: true,
+                      children: produtosAgrupados.entries
+                          .map(
+                            (entry) => organizarProdutosPorTipo(
+                                context, entry.key, entry.value),
+                          )
+                          .toList(),
+                    );
+                  }, loading: () {
+                    return const Center(child: CircularProgressIndicator());
+                  }, error: (error, stack) {
+                    return const Center(
+                      child: Column(
+                        children: [
+                          Text('Erro ao carregar produtos'),
+                        ],
                       ),
                     );
-                  },
-                  icon: const Icon(Icons.add),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50),
-                  ),
-                  label: const Text('Adicionar Produto')),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EmpresaEditPage(
-                          empresa: empresa,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.edit),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50),
-                  ),
-                  label: const Text('Alterar Empresa')),
-              const SizedBox(height: 20),
-              Expanded(
-                  child: listaProdutos.when(data: (produtos) {
-                final produtosAgrupados = agruparProdutosPorTipo(produtos);
-                return ListView(
-                  children: produtosAgrupados.entries
-                      .map(
-                        (entry) => organizarProdutosPorTipo(
-                            context, entry.key, entry.value),
-                      )
-                      .toList(),
-                );
-              }, loading: () {
-                return const Center(child: CircularProgressIndicator());
-              }, error: (error, stack) {
-                return const Center(
-                  child: Column(
-                    children: [
-                      Text('Erro ao carregar produtos'),
-                    ],
-                  ),
-                );
-              }))
-            ],
+                  })
+                ],
+              ),
+            ),
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.grey[200],
+        height: MediaQuery.of(context).size.height * 0.06,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Todos os direitos reservados © Pegue o Doce ${DateTime.now().year}',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
         ),
       ),
     );

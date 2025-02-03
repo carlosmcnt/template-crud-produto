@@ -75,15 +75,17 @@ class LoginPageState extends ConsumerState<LoginPage> {
                 ),
                 child: Form(
                   key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _inicio(context),
-                      _camposObrigatorios(context),
-                      _senhaEsquecida(context),
-                      _cadastro(context),
-                    ],
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _inicio(context),
+                        _camposObrigatorios(context),
+                        _senhaEsquecida(context),
+                        _cadastro(context),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -107,7 +109,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
               ),
             );
           },
-          child: const Text('Cadastre-se'),
+          child: const Text('Cadastre-se', textAlign: TextAlign.center),
         ),
         const SizedBox(height: 80),
       ],
@@ -124,33 +126,36 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
           if (!context.mounted) return;
         },
-        child:
-            const Text('Esqueceu a senha? Preencha seu e-mail e clique aqui'),
+        child: const Text('Esqueceu a senha? Preencha seu e-mail e clique aqui',
+            textAlign: TextAlign.center),
       ),
     );
   }
 
   _inicio(context) {
-    return Column(
-      children: [
-        Image.asset(
-          'logo.png',
-          fit: BoxFit.cover,
-          height: 150,
-          width: 150,
-        ),
-        const Text(
-          "Bem vindo ao app Pegue o Doce!",
-          style: TextStyle(
-            fontSize: 20,
+    return SizedBox(
+      child: Column(
+        children: [
+          Image.asset(
+            'logo-nome.png',
+            fit: BoxFit.cover,
+            height: 250,
+            width: 250,
           ),
-        ),
-        const Text("Faça login para continuar",
+          const Text(
+            "Bem vindo ao app Pegue o Doce!",
             style: TextStyle(
-              fontSize: 16,
-            )),
-        const SizedBox(height: 30),
-      ],
+              fontSize: 20,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const Text("Faça login para continuar",
+              style: TextStyle(
+                fontSize: 16,
+              )),
+          const SizedBox(height: 30),
+        ],
+      ),
     );
   }
 
