@@ -5,8 +5,7 @@ import 'package:template_crud_produto/produto/services/produto_service.dart';
 part 'produto_edit_controller.g.dart';
 
 @riverpod
-class ProdutoEditController extends _$ProdutoEditController{
-
+class ProdutoEditController extends _$ProdutoEditController {
   @override
   Future<Produto> build(Produto produto) async {
     return produto;
@@ -23,5 +22,4 @@ class ProdutoEditController extends _$ProdutoEditController{
     }
     state = await AsyncValue.guard(() => Future.value(produto));
   }
-
 }

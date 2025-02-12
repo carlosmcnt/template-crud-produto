@@ -46,6 +46,7 @@ class ProdutoListPage extends ConsumerWidget {
                   vegano: false,
                   alergenos: [],
                   empresaId: empresa.id!,
+                  categoriaId: '',
                   dataCadastro: Timestamp.now(),
                   dataUltimaAlteracao: Timestamp.now(),
                 ),

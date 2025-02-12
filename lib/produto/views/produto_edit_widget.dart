@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:template_crud_produto/categoria/models/categoria.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
@@ -26,6 +28,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   late TextEditingController _tipoController;
   late TextEditingController _saborController;
   late TextEditingController _alergenosController;
+  late String _categoria = '';
   List<String> _alergenos = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -35,16 +38,28 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   Produto get produto => widget.produto;
   NormalizadorMoeda normalizador = NormalizadorMoeda();
 
+  void carregarCategoria() {
+    ref
+        .read(produtoListControllerProvider.notifier)
+        .buscarCategorias()
+        .then((categorias) {
+      final categoria = categorias.firstWhere(
+          (element) => element.id == produto.categoriaId,
+          orElse: () => Categoria(id: '', descricao: '', nome: ''));
+      _categoria = categoria.id!;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    carregarCategoria();
     _descricaoController = TextEditingController(text: produto.descricao);
     _valorController =
         TextEditingController(text: produto.valorUnitario.toString());
     _tipoController = TextEditingController(text: produto.tipo);
     _saborController = TextEditingController(text: produto.sabor);
     _alergenosController = TextEditingController();
-
     _temLactose = produto.temLactose;
     _temGlutem = produto.temGlutem;
     _vegano = produto.vegano;
@@ -80,7 +95,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   labelText: 'Descrição do produto:',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: const Icon(Icons.description),
+                  prefixIcon: const Icon(FontAwesomeIcons.circleInfo),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -95,7 +110,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   labelText: 'Valor Unitário:',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: const Icon(Icons.attach_money),
+                  prefixText: 'R\$ ',
+                  prefixIcon: const Icon(FontAwesomeIcons.moneyBillWave),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -113,6 +129,40 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 },
               ),
               const SizedBox(height: 10),
+              FutureBuilder<List<Categoria>>(
+                future: ref
+                    .read(produtoListControllerProvider.notifier)
+                    .buscarCategorias(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return const Text('Erro ao carregar categorias');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('Nenhuma categoria encontrada');
+                  } else {
+                    return DropdownMenu<String>(
+                      label: const Text('Categoria do produto:'),
+                      leadingIcon: const Icon(FontAwesomeIcons.tag),
+                      initialSelection: _categoria,
+                      dropdownMenuEntries: snapshot.data!
+                          .map((categoria) => DropdownMenuEntry<String>(
+                                value: categoria.id!,
+                                label: categoria.nome,
+                              ))
+                          .toList(),
+                      width: MediaQuery.sizeOf(context).width,
+                      onSelected: (value) {
+                        setState(() {
+                          _categoria = value!;
+                        });
+                      },
+                      enableSearch: false,
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _tipoController,
                 decoration: InputDecoration(
@@ -121,7 +171,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: const Icon(Icons.emoji_food_beverage_rounded),
+                  prefixIcon: const Icon(FontAwesomeIcons.clipboardList),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -139,7 +189,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: const Icon(Icons.food_bank_rounded),
+                  prefixIcon: const Icon(FontAwesomeIcons.utensils),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -150,10 +200,14 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
               ),
               const SizedBox(height: 10),
               SwitchListTile(
-                title: const Text('Contém glúten?'),
+                title: const Row(
+                  children: [
+                    Icon(FontAwesomeIcons.breadSlice),
+                    SizedBox(width: 10),
+                    Text('Contém glútem?'),
+                  ],
+                ),
                 value: _temGlutem,
-                thumbIcon: WidgetStateProperty.all(
-                    const Icon(Icons.breakfast_dining_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _temGlutem = value;
@@ -161,10 +215,14 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 },
               ),
               SwitchListTile(
-                title: const Text('Contém lactose?'),
+                title: const Row(
+                  children: [
+                    Icon(FontAwesomeIcons.cheese),
+                    SizedBox(width: 10),
+                    Text('Contém lactose?'),
+                  ],
+                ),
                 value: _temLactose,
-                thumbIcon: WidgetStateProperty.all(
-                    const Icon(Icons.local_drink_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _temLactose = value;
@@ -172,10 +230,14 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                 },
               ),
               SwitchListTile(
-                title: const Text('É vegano?'),
+                title: const Row(
+                  children: [
+                    Icon(FontAwesomeIcons.seedling),
+                    SizedBox(width: 10),
+                    Text('Vegano?'),
+                  ],
+                ),
                 value: _vegano,
-                thumbIcon: WidgetStateProperty.all(
-                    const Icon(Icons.emoji_nature_outlined)),
                 onChanged: (value) {
                   setState(() {
                     _vegano = value;
@@ -194,7 +256,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                         hintStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        prefixIcon: const Icon(Icons.medical_services_outlined),
+                        prefixIcon: const Icon(FontAwesomeIcons.handDots),
                       ),
                     ),
                   ),
@@ -249,6 +311,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                     temLactose: _temLactose,
                     vegano: _vegano,
                     alergenos: _alergenos,
+                    categoriaId: _categoria,
                     empresaId: widget.empresa.id!,
                   );
 

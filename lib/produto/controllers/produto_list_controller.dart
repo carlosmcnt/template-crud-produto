@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:template_crud_produto/categoria/models/categoria.dart';
+import 'package:template_crud_produto/categoria/services/categoria_service.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
@@ -75,6 +77,16 @@ class ProdutoListController extends _$ProdutoListController {
           .read(produtoServiceProvider)
           .getProdutosPorEmpresa(empresa!.id!);
     });
+  }
+
+  Future<List<Categoria>> buscarCategorias() async {
+    final categoriaService = ref.read(categoriaServiceProvider);
+    return categoriaService.getCategoriasAtivas();
+  }
+
+  Future<Categoria> buscarCategoriaPorProdutoId(String idProduto) async {
+    final categoriaService = ref.read(categoriaServiceProvider);
+    return categoriaService.getCategoriaPorIdProduto(idProduto);
   }
 
   Future<void> deletarProduto(Produto produto) async {

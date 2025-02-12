@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
@@ -53,13 +54,13 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
               child: Column(
                 children: [
                   Card(
-                    color: Colors.red[200],
+                    color: Colors.grey[300],
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
                           const Icon(
-                            Icons.business,
+                            FontAwesomeIcons.store,
                             size: 50,
                             color: Colors.black,
                           ),
@@ -95,6 +96,7 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
                                 vegano: false,
                                 alergenos: [],
                                 empresaId: empresa.id!,
+                                categoriaId: '',
                                 dataCadastro: Timestamp.now(),
                                 dataUltimaAlteracao: Timestamp.now(),
                               ),
@@ -153,19 +155,7 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        color: Colors.grey[200],
-        height: MediaQuery.of(context).size.height * 0.06,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Todos os direitos reservados © Pegue o Doce ${DateTime.now().year}',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: Tema.rodape(context),
     );
   }
 
@@ -190,7 +180,7 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
               children: produtos
                   .map(
                     (produto) => ListTile(
-                      leading: const Icon(Icons.cake_rounded),
+                      leading: const Icon(FontAwesomeIcons.cookieBite),
                       title: Text(produto.sabor,
                           style: const TextStyle(fontSize: 20)),
                       subtitle: Text(

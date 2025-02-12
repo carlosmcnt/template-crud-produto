@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fuzzy/fuzzy.dart';
+import 'package:template_crud_produto/categoria/models/categoria.dart';
+import 'package:template_crud_produto/categoria/repositories/categoria_repository.dart';
 import 'package:template_crud_produto/menu/views/menu_lateral.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
@@ -13,14 +17,110 @@ class MenuPrincipalWidget extends ConsumerStatefulWidget {
 }
 
 class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
+  late Future<List<Categoria>> listaCategorias;
+  List<Categoria> categoriasEmExibicao = [];
+  List<Categoria> totalCategorias = [];
+  String textoPesquisa = '';
+
+  @override
+  void initState() {
+    super.initState();
+    listaCategorias =
+        ref.read(categoriaRepositoryProvider).getCategoriasAtivas();
+  }
+
+  void atualizarCategoriasEmExibicao(String textoPesquisa) {
+    if (textoPesquisa.isEmpty) {
+      setState(() {
+        categoriasEmExibicao = totalCategorias.take(5).toList();
+      });
+    } else {
+      final buscaFuzzy = Fuzzy(
+        totalCategorias.map((categoria) => categoria.nome).toList(),
+        options: FuzzyOptions(findAllMatches: true, threshold: 0.3),
+      );
+      final listaFiltrada = buscaFuzzy.search(textoPesquisa);
+
+      final categoriasEncontradas = listaFiltrada
+          .map((resultado) => totalCategorias.firstWhere(
+                (categoria) => categoria.nome == resultado.item,
+              ))
+          .toList();
+
+      setState(() {
+        categoriasEmExibicao = categoriasEncontradas;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Tema.appBar(),
-      body: const Center(
-        child: Text('Bem-vindo ao menu principal!'),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: FutureBuilder(
+            future: listaCategorias,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Erro: ${snapshot.error}');
+              } else {
+                totalCategorias = snapshot.data!;
+                totalCategorias.sort((a, b) => a.nome.compareTo(b.nome));
+                if (categoriasEmExibicao.isEmpty) {
+                  categoriasEmExibicao = totalCategorias.take(5).toList();
+                }
+                return Column(
+                  children: [
+                    SearchBar(
+                      hintText: 'Pesquisar por categoria',
+                      leading: const Icon(Icons.search),
+                      onChanged: (texto) {
+                        setState(() {
+                          textoPesquisa = texto;
+                          atualizarCategoriasEmExibicao(texto);
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: categoriasEmExibicao.length,
+                        itemBuilder: (context, index) {
+                          final categoria = categoriasEmExibicao[index];
+                          return cardLayout(categoria);
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+        ),
       ),
       drawer: const MenuLateralWidget(),
+      bottomNavigationBar: Tema.rodape(context),
+    );
+  }
+
+  Widget cardLayout(Categoria categoria) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: ListTile(
+        leading: const FaIcon(FontAwesomeIcons.store),
+        title: Text(categoria.nome),
+        subtitle: Text(categoria.descricao),
+        onTap: () {
+          setState(() {
+            textoPesquisa = categoria.nome;
+            atualizarCategoriasEmExibicao(categoria.nome);
+          });
+        },
+      ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Produto {
-
   final String? id;
   final String descricao;
   final double valorUnitario;
@@ -12,23 +11,24 @@ class Produto {
   final bool vegano;
   final List<String> alergenos;
   final String empresaId;
+  final String categoriaId;
   final Timestamp dataCadastro;
   final Timestamp dataUltimaAlteracao;
 
-  Produto({
-    this.id, 
-    required this.descricao, 
-    required this.valorUnitario, 
-    required this.tipo, 
-    required this.sabor, 
-    this.temGlutem = false, 
-    this.temLactose = false, 
-    this.vegano = false, 
-    required this.alergenos,
-    required this.empresaId, 
-    required this.dataCadastro, 
-    required this.dataUltimaAlteracao
-  });
+  Produto(
+      {this.id,
+      required this.descricao,
+      required this.valorUnitario,
+      required this.tipo,
+      required this.sabor,
+      this.temGlutem = false,
+      this.temLactose = false,
+      this.vegano = false,
+      required this.alergenos,
+      required this.empresaId,
+      required this.categoriaId,
+      required this.dataCadastro,
+      required this.dataUltimaAlteracao});
 
   factory Produto.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -44,6 +44,7 @@ class Produto {
       vegano: data['vegano'] ?? false,
       alergenos: List<String>.from(data['alergenos'] ?? []),
       empresaId: data['empresaId'] ?? '',
+      categoriaId: data['categoriaId'] ?? '',
       dataUltimaAlteracao: data['dataUltimaAlteracao'],
     );
   }
@@ -60,6 +61,7 @@ class Produto {
       'vegano': vegano,
       'alergenos': alergenos,
       'empresaId': empresaId,
+      'categoriaId': categoriaId,
       'dataUltimaAlteracao': dataUltimaAlteracao,
     };
   }
@@ -75,6 +77,7 @@ class Produto {
     bool? vegano,
     List<String>? alergenos,
     String? empresaId,
+    String? categoriaId,
     Timestamp? dataCadastro,
     Timestamp? dataUltimaAlteracao,
   }) {
@@ -89,9 +92,9 @@ class Produto {
       vegano: vegano ?? this.vegano,
       alergenos: alergenos ?? this.alergenos,
       empresaId: empresaId ?? this.empresaId,
+      categoriaId: categoriaId ?? this.categoriaId,
       dataCadastro: dataCadastro ?? this.dataCadastro,
       dataUltimaAlteracao: dataUltimaAlteracao ?? this.dataUltimaAlteracao,
     );
   }
-
 }
