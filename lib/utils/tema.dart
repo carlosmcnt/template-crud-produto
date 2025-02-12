@@ -135,6 +135,7 @@ class Tema {
         ),
         hintStyle: TextStyle(color: textSecondaryColor),
         labelStyle: TextStyle(color: textPrimaryColor),
+        prefixStyle: TextStyle(color: textPrimaryColor),
         prefixIconColor: accentColor,
         suffixIconColor: accentColor,
         disabledBorder: OutlineInputBorder(
@@ -180,6 +181,22 @@ class Tema {
         'logo.png',
         fit: BoxFit.cover,
         height: 90,
+      ),
+    );
+  }
+
+  static Widget rodape(BuildContext context) {
+    return Container(
+      color: Colors.grey[200],
+      height: MediaQuery.of(context).size.height * 0.06,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Todos os direitos reservados © Pegue o Doce ${DateTime.now().year}',
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
       ),
     );
   }

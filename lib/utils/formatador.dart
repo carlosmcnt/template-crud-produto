@@ -26,7 +26,7 @@ class FormatadorMoedaReal extends TextInputFormatter {
 
     double valor = double.parse(newValue.text);
     final formatador = NumberFormat("#,##0.00", "pt_BR");
-    String valorFormatado = "R\$ ${formatador.format(valor / 100)}";
+    String valorFormatado = formatador.format(valor / 100);
 
     return newValue.copyWith(
         text: valorFormatado,
