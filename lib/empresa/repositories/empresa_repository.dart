@@ -3,13 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/firebase/firebase.dart';
+import 'package:template_crud_produto/produto/repositories/produto_repository.dart';
 
 part 'empresa_repository.g.dart';
 
 class EmpresaRepository {
   final FirebaseFirestore _firestore;
+  final ProdutoRepository produtoRepository;
 
-  EmpresaRepository(this._firestore);
+  EmpresaRepository(this._firestore, this.produtoRepository);
 
   Future<Empresa?> obterEmpresaPorId(String id) async {
     final snapshot = await _firestore.collection('empresas').doc(id).get();
@@ -52,10 +54,27 @@ class EmpresaRepository {
     }
     return null;
   }
+
+  Future<Set<Empresa>> obterListaEmpresasPorCategoriaDoProduto(
+      String categoriaId) async {
+    final produtos =
+        await produtoRepository.obterProdutosPorCategoria(categoriaId);
+    final listaEmpresas = <Empresa>{};
+    if (produtos.isNotEmpty) {
+      for (final produto in produtos) {
+        final empresa = await obterEmpresaPorId(produto!.empresaId);
+        if (empresa != null) {
+          listaEmpresas.add(empresa);
+        }
+      }
+    }
+    return listaEmpresas;
+  }
 }
 
 @riverpod
 EmpresaRepository empresaRepository(Ref ref) {
   final firestore = ref.watch(firebaseFirestoreProvider);
-  return EmpresaRepository(firestore);
+  final produtoRepository = ref.watch(produtoRepositoryProvider);
+  return EmpresaRepository(firestore, produtoRepository);
 }

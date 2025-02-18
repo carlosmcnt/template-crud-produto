@@ -10,18 +10,18 @@ import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
-class InfoEmpresaPage extends ConsumerStatefulWidget {
+class DadosEmpresaPage extends ConsumerStatefulWidget {
   final Empresa empresa;
 
-  const InfoEmpresaPage({super.key, required this.empresa});
+  const DadosEmpresaPage({super.key, required this.empresa});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return InfoEmpresaPageState();
+    return DadosEmpresaPageState();
   }
 }
 
-class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
+class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
   Empresa get empresa => widget.empresa;
 
   @override
@@ -155,7 +155,6 @@ class InfoEmpresaPageState extends ConsumerState<InfoEmpresaPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Tema.rodape(context),
     );
   }
 

@@ -7,14 +7,12 @@ import 'package:template_crud_produto/firebase/firebase.dart';
 part 'produto_repository.g.dart';
 
 class ProdutoRepository {
-  
   final FirebaseFirestore _firestore;
 
   ProdutoRepository(this._firestore);
 
   Future<Produto?> getProdutoPorId(String id) async {
-    final snapshot =
-        await _firestore.collection('produtos').doc(id).get();
+    final snapshot = await _firestore.collection('produtos').doc(id).get();
     if (snapshot.exists) {
       return Produto.fromDocument(snapshot);
     }
@@ -28,10 +26,13 @@ class ProdutoRepository {
   }
 
   Future<List<Produto>> getProdutosPorEmpresa(String empresaId) async {
-  return _firestore.collection('produtos').where('empresaId', isEqualTo: empresaId)
-      .get().then((snapshot) {
-        return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
-      });
+    return _firestore
+        .collection('produtos')
+        .where('empresaId', isEqualTo: empresaId)
+        .get()
+        .then((snapshot) {
+      return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
+    });
   }
 
   Future<Produto> inserirProduto(Produto produto) async {
@@ -40,13 +41,23 @@ class ProdutoRepository {
   }
 
   Future<void> atualizarProduto(Produto produto) async {
-    await _firestore.collection('produtos').doc(produto.id).update(produto.toMap());
+    await _firestore
+        .collection('produtos')
+        .doc(produto.id)
+        .update(produto.toMap());
   }
 
   Future<void> deletarProduto(String id) async {
     await _firestore.collection('produtos').doc(id).delete();
   }
 
+  Future<List<Produto?>> obterProdutosPorCategoria(String categoriaId) async {
+    final snapshot = await _firestore
+        .collection('produtos')
+        .where('categoriaId', isEqualTo: categoriaId)
+        .get();
+    return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
+  }
 }
 
 @riverpod

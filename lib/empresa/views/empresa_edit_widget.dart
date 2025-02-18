@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/controllers/empresa_edit_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/views/info_empresa.dart';
+import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 import 'package:template_crud_produto/utils/validador.dart';
@@ -279,7 +279,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
 
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => InfoEmpresaPage(
+                          builder: (context) => DadosEmpresaPage(
                             empresa: empresaNova,
                           ),
                         ),

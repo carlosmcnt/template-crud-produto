@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/views/info_empresa.dart';
+import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
@@ -104,7 +104,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
-                          InfoEmpresaPage(empresa: snapshot.data!),
+                          DadosEmpresaPage(empresa: snapshot.data!),
                     ));
                   },
                 );

@@ -6,7 +6,6 @@ import 'package:template_crud_produto/empresa/repositories/empresa_repository.da
 part 'empresa_service.g.dart';
 
 class EmpresaService {
-
   final EmpresaRepository empresaRepository;
 
   EmpresaService({required this.empresaRepository});
@@ -15,7 +14,7 @@ class EmpresaService {
     return await empresaRepository.obterEmpresaPorId(id);
   }
 
-  Future<List<Empresa>> getEmpresas() async{
+  Future<List<Empresa>> getEmpresas() async {
     return await empresaRepository.getEmpresas().first;
   }
 
@@ -35,6 +34,11 @@ class EmpresaService {
     return await empresaRepository.obterEmpresaPorUsuarioId(usuarioId);
   }
 
+  Future<Set<Empresa>> obterListaEmpresasPorCategoriaDoProduto(
+      String categoriaId) async {
+    return await empresaRepository
+        .obterListaEmpresasPorCategoriaDoProduto(categoriaId);
+  }
 }
 
 @Riverpod(keepAlive: true)

@@ -5,6 +5,7 @@ import 'package:fuzzy/fuzzy.dart';
 import 'package:template_crud_produto/categoria/models/categoria.dart';
 import 'package:template_crud_produto/categoria/repositories/categoria_repository.dart';
 import 'package:template_crud_produto/menu/views/menu_lateral.dart';
+import 'package:template_crud_produto/menu/views/pesquisa_empresa.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
 class MenuPrincipalWidget extends ConsumerStatefulWidget {
@@ -103,7 +104,6 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
         ),
       ),
       drawer: const MenuLateralWidget(),
-      bottomNavigationBar: Tema.rodape(context),
     );
   }
 
@@ -115,10 +115,11 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
         title: Text(categoria.nome),
         subtitle: Text(categoria.descricao),
         onTap: () {
-          setState(() {
-            textoPesquisa = categoria.nome;
-            atualizarCategoriasEmExibicao(categoria.nome);
-          });
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PesquisaEmpresa(categoria: categoria),
+            ),
+          );
         },
       ),
     );

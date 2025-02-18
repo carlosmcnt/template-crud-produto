@@ -6,7 +6,6 @@ import 'package:template_crud_produto/produto/repositories/produto_repository.da
 part 'produto_service.g.dart';
 
 class ProdutoService {
-  
   final ProdutoRepository produtoRepository;
 
   ProdutoService({required this.produtoRepository});
@@ -15,7 +14,7 @@ class ProdutoService {
     return await produtoRepository.getProdutoPorId(id);
   }
 
-  Future<List<Produto>> getProdutos() async{
+  Future<List<Produto>> getProdutos() async {
     return await produtoRepository.getProdutos().first;
   }
 
@@ -35,6 +34,9 @@ class ProdutoService {
     await produtoRepository.deletarProduto(id);
   }
 
+  Future<List<Produto?>> obterProdutosPorCategoria(String categoriaId) async {
+    return await produtoRepository.obterProdutosPorCategoria(categoriaId);
+  }
 }
 
 @Riverpod(keepAlive: true)
