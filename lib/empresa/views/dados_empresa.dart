@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
@@ -42,7 +43,7 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listaProdutos = ref.watch(produtoListControllerProvider);
+    final listaProdutos = ref.watch(dadosEmpresaControllerProvider);
 
     return Scaffold(
       appBar: Tema.appBar(),

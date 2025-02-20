@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:template_crud_produto/categoria/models/categoria.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
+import 'package:template_crud_produto/empresa/views/dados_empresa_comprador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
 class PesquisaEmpresa extends ConsumerStatefulWidget {
@@ -90,6 +91,15 @@ class PesquisaEmpresaState extends ConsumerState<PesquisaEmpresa> {
                       itemBuilder: (context, index) {
                         final empresa = empresas[index];
                         return ListTile(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => DadosEmpresaCompradorPage(
+                                  empresa: empresa,
+                                ),
+                              ),
+                            );
+                          },
                           leading: const Icon(FontAwesomeIcons.buildingFlag),
                           tileColor: Colors.grey[200],
                           shape: RoundedRectangleBorder(

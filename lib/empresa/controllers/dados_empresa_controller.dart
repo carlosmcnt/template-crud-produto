@@ -1,0 +1,36 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:template_crud_produto/empresa/services/empresa_service.dart';
+import 'package:template_crud_produto/produto/models/produto.dart';
+import 'package:template_crud_produto/produto/services/produto_service.dart';
+import 'package:template_crud_produto/usuario/services/usuario_service.dart';
+
+part 'dados_empresa_controller.g.dart';
+
+@riverpod
+class DadosEmpresaController extends _$DadosEmpresaController {
+  @override
+  Future<List<Produto>> build() async {
+    state = const AsyncValue.loading();
+    try {
+      final usuarioId =
+          await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+      final empresa = await ref
+          .read(empresaServiceProvider)
+          .obterEmpresaPorUsuarioId(usuarioId!);
+
+      if (empresa != null) {
+        final produtos = await ref
+            .read(produtoServiceProvider)
+            .getProdutosPorEmpresa(empresa.id!);
+        state = AsyncValue.data(produtos);
+        return produtos;
+      } else {
+        state = const AsyncValue.data([]);
+        return [];
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+      return [];
+    }
+  }
+}
