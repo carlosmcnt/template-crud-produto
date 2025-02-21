@@ -1,6 +1,7 @@
 import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:template_crud_produto/empresa/controllers/empresa_edit_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
@@ -25,12 +26,10 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
   late TextEditingController _chavePixController;
   late TextEditingController _descricaoController;
   late TextEditingController _locaisEntregaController;
-  List<String> _locaisEntrega = [];
-  Validador validador = Validador();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  var tipoChavePix = '';
-  bool checkboxMarcado = false;
-  bool campoDesabilitado = true;
+  late List<String> _locaisEntrega = [];
+  late String tipoChavePix = '';
+  bool ignorarTipoChavePix = false;
 
   Empresa get empresa => widget.empresa;
 
@@ -41,8 +40,10 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
     _chavePixController = TextEditingController(text: empresa.chavePix);
     _descricaoController = TextEditingController(text: empresa.descricao);
     _locaisEntregaController = TextEditingController();
-
     _locaisEntrega = List<String>.from(empresa.locaisEntrega);
+    if (_nomeFantasiaController.text.isNotEmpty) {
+      ignorarTipoChavePix = true;
+    }
   }
 
   @override
@@ -50,23 +51,8 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
     _nomeFantasiaController.dispose();
     _chavePixController.dispose();
     _descricaoController.dispose();
+    _locaisEntregaController.dispose();
     super.dispose();
-  }
-
-  atualizarChavePix(usuarioLogado) {
-    switch (tipoChavePix) {
-      case 'CPF':
-        _chavePixController.text = usuarioLogado!.cpf;
-        break;
-      case 'Telefone':
-        _chavePixController.text = usuarioLogado!.telefone;
-        break;
-      case 'E-mail':
-        _chavePixController.text = usuarioLogado!.email;
-        break;
-      default:
-        break;
-    }
   }
 
   @override
@@ -87,7 +73,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     labelText: 'Nome Fantasia:',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    prefixIcon: const Icon(Icons.business),
+                    prefixIcon: const Icon(FontAwesomeIcons.building),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -103,55 +89,28 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                 DropdownMenu<String>(
                   label: const Text('Tipo de chave PIX:'),
                   leadingIcon: const Icon(Icons.key),
-                  dropdownMenuEntries: validador.listaTiposChavesPix(),
+                  dropdownMenuEntries: Validador().listaTiposChavesPix(),
                   width: MediaQuery.sizeOf(context).width,
+                  initialSelection:
+                      empresa.chavePix.isNotEmpty ? empresa.chavePix : '',
                   onSelected: (value) {
                     setState(() {
                       tipoChavePix = value!;
-                      checkboxMarcado = false;
-                      campoDesabilitado = !campoDesabilitado;
+                      _chavePixController.clear();
                     });
                   },
+                  requestFocusOnTap: false,
                   enableSearch: false,
                 ),
-                /*
-                DropdownButtonFormField(
-                  items: validador.listaTiposChavesPix(),
-                  value: tipoChavePix,
-                  onTap: () {
-                    _chavePixController.clear();
-                    checkboxMarcado = false;
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Tipo da chave Pix:',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    prefixIcon: const Icon(Icons.qr_code),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      tipoChavePix = value.toString();
-                    });
-                  },
-                ),
-                */
-                const SizedBox(height: 15),
-                Center(
-                  child: tipoChavePix == 'CPF' ||
-                          tipoChavePix == 'Telefone' ||
-                          tipoChavePix == 'E-mail'
-                      ? checkboxChaveExistente()
-                      : const SizedBox.shrink(),
-                ),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _chavePixController,
                   maxLength: 32,
-                  readOnly: campoDesabilitado,
                   decoration: InputDecoration(
                     labelText: 'Valor da chave PIX:',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    prefixIcon: const Icon(Icons.monetization_on),
+                    prefixIcon: const Icon(FontAwesomeIcons.qrcode),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       tooltip: 'Limpar campo',
@@ -160,15 +119,16 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                       },
                     ),
                   ),
-                  enabled: !checkboxMarcado,
                   validator: (value) {
-                    if (value == null || value.isEmpty && !checkboxMarcado) {
+                    if (value == null || value.isEmpty) {
                       return 'O valor da chave é obrigatório';
                     }
-                    if (validador.validarChavePixSelecionada(
-                                value, tipoChavePix) ==
-                            false &&
-                        !checkboxMarcado) {
+                    if (ignorarTipoChavePix) {
+                      return null;
+                    }
+                    if (Validador()
+                            .validarChavePixSelecionada(value, tipoChavePix) ==
+                        false) {
                       return 'Chave PIX inválida';
                     }
                     return null;
@@ -188,7 +148,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     labelText: 'Descrição:',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    prefixIcon: const Icon(Icons.description),
+                    prefixIcon: const Icon(FontAwesomeIcons.circleInfo),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -200,23 +160,19 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                   maxLines: 5,
                 ),
                 const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _locaisEntregaController,
-                        decoration: InputDecoration(
-                          labelText: 'Possíveis locais de entrega:',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          prefixIcon: const Icon(Icons.location_on),
-                          helperText:
-                              'Ex: PAF II, Instituto de Biologia, Faculdade de Educação',
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add),
+                TextFormField(
+                  controller: _locaisEntregaController,
+                  decoration: InputDecoration(
+                    labelText: 'Possíveis locais de entrega:',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    prefixIcon: const Icon(FontAwesomeIcons.mapLocationDot),
+                    helperText:
+                        'Ex: PAF II, Instituto de Biologia, Faculdade de Educação',
+                    helperMaxLines: 2,
+                    suffixIcon: IconButton(
+                      icon: const Icon(FontAwesomeIcons.circleCheck),
+                      tooltip: 'Adicionar local de entrega',
                       onPressed: () {
                         final local = _locaisEntregaController.text.trim();
                         if (local.isNotEmpty) {
@@ -227,6 +183,9 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                         }
                       },
                     ),
+                  ),
+                  inputFormatters: [
+                    FormatadorLetrasMaiusculas(),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -241,6 +200,8 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     for (var local in _locaisEntrega)
                       Chip(
                         label: Text(local),
+                        avatar: const Icon(FontAwesomeIcons.locationArrow),
+                        deleteButtonTooltipMessage: 'Remover local de entrega',
                         onDeleted: () {
                           setState(() {
                             _locaisEntrega.remove(local);
@@ -256,10 +217,6 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                       final usuarioLogado = await ref
                           .read(usuarioServiceProvider)
                           .obterUsuarioLogado();
-
-                      if (checkboxMarcado) {
-                        atualizarChavePix(usuarioLogado);
-                      }
 
                       final empresaNova = empresa.copyWith(
                         nomeFantasia: _nomeFantasiaController.text,
@@ -293,34 +250,6 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget checkboxChaveExistente() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Checkbox(
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    checkboxMarcado = value;
-                  });
-                }
-              },
-              tristate: false,
-              value: checkboxMarcado,
-              activeColor: Theme.of(context).primaryColor,
-            ),
-            const Text(
-              'Usar chave do meu usuário',
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-      ],
     );
   }
 }

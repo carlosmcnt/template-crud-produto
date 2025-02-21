@@ -30,7 +30,7 @@ class Validador {
     }
   }
 
-  listaTiposChavesPix() {
+  List<DropdownMenuEntry<String>> listaTiposChavesPix() {
     return [
       const DropdownMenuEntry(
         value: '',
