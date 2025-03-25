@@ -10,7 +10,7 @@ class EmpresaService {
 
   EmpresaService({required this.empresaRepository});
 
-  Future<Empresa?> obterEmpresaById(String id) async {
+  Future<Empresa?> obterEmpresaPorId(String id) async {
     return await empresaRepository.obterEmpresaPorId(id);
   }
 

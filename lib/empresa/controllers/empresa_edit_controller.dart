@@ -28,7 +28,7 @@ class EmpresaEditController extends _$EmpresaEditController {
       await empresaService.atualizarEmpresa(empresa);
     }
     state = await AsyncValue.guard(() async {
-      final result = await empresaService.obterEmpresaById(empresa.id!);
+      final result = await empresaService.obterEmpresaPorId(empresa.id!);
       if (result == null) {
         throw Exception('Empresa not found');
       }
