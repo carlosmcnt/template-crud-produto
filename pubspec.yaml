@@ -43,6 +43,7 @@ dependencies:
   br_validators: ^2.0.3
   fuzzy: ^0.5.1
   font_awesome_flutter: ^10.8.0
+  file_picker: ^9.0.1
 
 dev_dependencies:
   flutter_test:
