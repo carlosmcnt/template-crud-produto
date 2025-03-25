@@ -37,6 +37,14 @@ class ProdutoService {
   Future<List<Produto?>> obterProdutosPorCategoria(String categoriaId) async {
     return await produtoRepository.obterProdutosPorCategoria(categoriaId);
   }
+
+  Future<List<Produto>> obterProdutosPorTipo(String tipo) async {
+    return await produtoRepository.obterProdutosPorTipo(tipo);
+  }
+
+  Future<List<String>> obterTiposDeProduto() async {
+    return await produtoRepository.obterTiposDeProduto();
+  }
 }
 
 @Riverpod(keepAlive: true)

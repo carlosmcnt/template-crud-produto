@@ -58,6 +58,19 @@ class ProdutoRepository {
         .get();
     return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
   }
+
+  Future<List<Produto>> obterProdutosPorTipo(String tipo) async {
+    final snapshot = await _firestore
+        .collection('produtos')
+        .where('tipo', isEqualTo: tipo)
+        .get();
+    return snapshot.docs.map((doc) => Produto.fromDocument(doc)).toList();
+  }
+
+  Future<List<String>> obterTiposDeProduto() async {
+    final snapshot = await _firestore.collection('produtos').get();
+    return snapshot.docs.map((doc) => doc['tipo'] as String).toSet().toList();
+  }
 }
 
 @riverpod
