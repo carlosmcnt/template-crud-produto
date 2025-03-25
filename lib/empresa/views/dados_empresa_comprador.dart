@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
+import 'package:template_crud_produto/pedido/views/encomenda_page.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
 class DadosEmpresaCompradorPage extends ConsumerStatefulWidget {
@@ -66,7 +67,15 @@ class DadosEmpresaCompradorPageState
                     label: const Text("Pedido"),
                   ),
                   ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => EncomendaPage(
+                              empresa: empresa,
+                            ),
+                          ),
+                        );
+                      },
                       icon: const Icon(FontAwesomeIcons.truckFast),
                       label: const Text("Encomenda")),
                 ],
