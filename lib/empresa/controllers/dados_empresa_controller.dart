@@ -2,6 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/empresa/services/empresa_service.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/services/produto_service.dart';
+import 'package:template_crud_produto/usuario/models/usuario_empresa.dart';
+import 'package:template_crud_produto/usuario/services/usuario_empresa_service.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 
 part 'dados_empresa_controller.g.dart';
@@ -32,5 +34,14 @@ class DadosEmpresaController extends _$DadosEmpresaController {
       state = AsyncValue.error(e, stack);
       return [];
     }
+  }
+
+  Future<void> adicionarEmpresaFavorita(UsuarioEmpresa usuarioEmpresa) async {
+    await ref.read(usuarioEmpresaServiceProvider).adicionar(usuarioEmpresa);
+  }
+
+  Future<String> obterIdUsuarioLogado() async {
+    String? id = await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
+    return id!;
   }
 }

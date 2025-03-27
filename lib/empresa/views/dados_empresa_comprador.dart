@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/pedido/views/encomenda_page.dart';
+import 'package:template_crud_produto/usuario/models/usuario_empresa.dart';
+import 'package:template_crud_produto/usuario/repositories/usuario_empresa_repository.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
 class DadosEmpresaCompradorPage extends ConsumerStatefulWidget {
@@ -47,12 +49,6 @@ class DadosEmpresaCompradorPageState
               ),
               Row(
                 children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(width: 16),
                   Expanded(child: Text(empresa.descricao)),
                 ],
               ),
@@ -64,7 +60,7 @@ class DadosEmpresaCompradorPageState
                   ElevatedButton.icon(
                     onPressed: () {},
                     icon: const Icon(FontAwesomeIcons.cartShopping),
-                    label: const Text("Pedido"),
+                    label: const Text("Realizar Pedido"),
                   ),
                   ElevatedButton.icon(
                       onPressed: () {
@@ -76,14 +72,24 @@ class DadosEmpresaCompradorPageState
                           ),
                         );
                       },
-                      icon: const Icon(FontAwesomeIcons.truckFast),
-                      label: const Text("Encomenda")),
+                      icon: const Icon(FontAwesomeIcons.box),
+                      label: const Text("Encomendar")),
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              dialogoFavoritarEmpresa(context),
+                        );
+                      },
+                      icon: const Icon(FontAwesomeIcons.star),
+                      label: const Text("Favoritar Empresa")),
                 ],
               ),
               const SizedBox(height: 16),
               const Row(
                 children: [
-                  Icon(FontAwesomeIcons.boxOpen),
+                  Icon(FontAwesomeIcons.clipboardCheck),
                   SizedBox(width: 10),
                   Text(
                     "Produtos:",
@@ -100,7 +106,7 @@ class DadosEmpresaCompradorPageState
                             title: Text(produto.descricao),
                             subtitle: Text(
                                 "R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(produto.valorUnitario)}"),
-                            leading: const Icon(FontAwesomeIcons.gem),
+                            leading: const Icon(FontAwesomeIcons.circleInfo),
                           ))
                       .toList(),
                   loading: () => const [CircularProgressIndicator()],
@@ -120,6 +126,8 @@ class DadosEmpresaCompradorPageState
               ),
               const SizedBox(height: 8),
               Wrap(
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 10,
                 children: empresa.locaisEntrega
                     .map((local) => Chip(
@@ -131,6 +139,60 @@ class DadosEmpresaCompradorPageState
           ),
         ),
       ),
+    );
+  }
+
+  AlertDialog dialogoFavoritarEmpresa(BuildContext context) {
+    return AlertDialog(
+      title: const Icon(FontAwesomeIcons.heartCircleExclamation,
+          color: Colors.red, size: 50),
+      content: const Text("Deseja favoritar esta empresa?"),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text("Cancelar"),
+        ),
+        TextButton(
+          onPressed: () async {
+            final usuarioLogadoId = await ref
+                .read(dadosEmpresaControllerProvider.notifier)
+                .obterIdUsuarioLogado();
+
+            UsuarioEmpresa usuarioEmpresa = UsuarioEmpresa(
+              empresaId: empresa.id!,
+              usuarioId: usuarioLogadoId,
+            );
+
+            bool existe = await ref
+                .read(usuarioEmpresaRepositoryProvider)
+                .existeUsuarioEmpresa(usuarioEmpresa);
+
+            if (!context.mounted) return;
+
+            if (existe) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Empresa já foi favoritada anteriormente.")),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Empresa favoritada com sucesso.")),
+              );
+
+              await ref
+                  .read(dadosEmpresaControllerProvider.notifier)
+                  .adicionarEmpresaFavorita(usuarioEmpresa);
+            }
+
+            if (!context.mounted) return;
+            Navigator.of(context).pop();
+          },
+          child: const Text("Confirmar"),
+        ),
+      ],
     );
   }
 }

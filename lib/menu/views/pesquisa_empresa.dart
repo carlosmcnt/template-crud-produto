@@ -53,7 +53,7 @@ class PesquisaEmpresaState extends ConsumerState<PesquisaEmpresa> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(8.0),
-            color: Colors.grey[300], // Fundo para destacar o indicador
+            color: Colors.grey[300],
             child: Text(
               categoria.nome,
               style: const TextStyle(
