@@ -34,8 +34,12 @@ class Pedido {
       id: doc.id,
       usuarioClienteId: data['usuarioClienteId'] ?? '',
       usuarioVendedorId: data['usuarioVendedorId'] ?? '',
-      itensPedido: (data['itensPedido'] as List)
-          .map((item) => ItemPedido.fromDocument(item))
+      itensPedido: (data['itensPedido'] as List<dynamic>? ?? [])
+          .map((item) => ItemPedido(
+                id: item['id'],
+                produtoId: item['produtoId'],
+                quantidade: item['quantidade'],
+              ))
           .toList(),
       status: data['status'] ?? '',
       dataPedido: data['dataPedido'] ?? Timestamp.now(),

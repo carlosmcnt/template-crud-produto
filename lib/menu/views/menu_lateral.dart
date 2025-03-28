@@ -5,6 +5,7 @@ import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
 import 'package:template_crud_produto/menu/views/dados_usuario.dart';
 import 'package:template_crud_produto/menu/views/empresa_favorita.dart';
+import 'package:template_crud_produto/pedido/views/historico_pedido_page.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/usuario/views/login_widget.dart';
@@ -116,7 +117,11 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             leading: const Icon(Icons.list_alt),
             title: const Text("Histórico de pedidos"),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const HistoricoPedidoPage(),
+                ),
+              );
             },
           ),
           ListTile(

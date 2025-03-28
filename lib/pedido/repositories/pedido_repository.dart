@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/firebase/firebase.dart';
 import 'package:template_crud_produto/pedido/models/pedido.dart';
+import 'package:template_crud_produto/pedido/models/status_pedido.dart';
 
 part 'pedido_repository.g.dart';
 
@@ -35,12 +36,12 @@ class PedidoRepository {
     });
   }
 
-  Stream<List<Pedido>> getPedidosPorCliente(String usuarioId) {
+  Future<List<Pedido>> getPedidosPorCliente(String usuarioId) async {
     return _firestore
         .collection('pedidos')
         .where('usuarioClienteId', isEqualTo: usuarioId)
-        .snapshots()
-        .map((snapshot) {
+        .get()
+        .then((snapshot) {
       return snapshot.docs.map((doc) => Pedido.fromDocument(doc)).toList();
     });
   }
@@ -58,6 +59,15 @@ class PedidoRepository {
   Future<Pedido> inserirPedido(Pedido pedido) async {
     final docRef = await _firestore.collection('pedidos').add(pedido.toMap());
     return pedido.copyWith(id: docRef.id);
+  }
+
+  Future<void> cancelarPedido(
+      String pedidoId, String motivoCancelamento) async {
+    await _firestore.collection('pedidos').doc(pedidoId).update({
+      'status': StatusPedido.CANCELADO.nome,
+      'motivoCancelamento': motivoCancelamento,
+      'dataUltimaAlteracao': Timestamp.now(),
+    });
   }
 }
 

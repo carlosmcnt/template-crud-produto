@@ -26,8 +26,13 @@ class PedidoService {
     return pedidoRepository.getPedidosPorStatus(status);
   }
 
-  Stream<List<Pedido>> getPedidosPorCliente(String usuarioId) {
-    return pedidoRepository.getPedidosPorCliente(usuarioId);
+  Future<List<Pedido>> getPedidosPorCliente(String usuarioId) async {
+    return await pedidoRepository.getPedidosPorCliente(usuarioId);
+  }
+
+  Future<void> cancelarPedido(
+      String pedidoId, String motivoCancelamento) async {
+    await pedidoRepository.cancelarPedido(pedidoId, motivoCancelamento);
   }
 }
 
