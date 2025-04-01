@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/pedido/models/pedido.dart';
 import 'package:template_crud_produto/pedido/services/pedido_service.dart';
-import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/services/produto_service.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 
@@ -10,14 +9,21 @@ part 'historico_pedido_controller.g.dart';
 @riverpod
 class HistoricoPedidoController extends _$HistoricoPedidoController {
   @override
-  Future<List<Pedido>> build() async {
+  Future<List<Pedido>> build(bool isHistoricoEmpresa) async {
     state = const AsyncValue.loading();
     try {
       final usuarioId =
           await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
-      final pedidos = await ref
-          .read(pedidoServiceProvider)
-          .getPedidosPorCliente(usuarioId!);
+      final List<Pedido> pedidos;
+      if (isHistoricoEmpresa) {
+        pedidos = await ref
+            .read(pedidoServiceProvider)
+            .getPedidosPorVendedor(usuarioId!);
+      } else {
+        pedidos = await ref
+            .read(pedidoServiceProvider)
+            .getPedidosPorCliente(usuarioId!);
+      }
       state = AsyncValue.data(pedidos);
       return pedidos;
     } catch (e, stack) {
@@ -26,14 +32,14 @@ class HistoricoPedidoController extends _$HistoricoPedidoController {
     }
   }
 
-  Future<void> cancelarPedido(
-      String pedidoId, String motivoCancelamento) async {
+  Future<void> cancelarPedido(String pedidoId, String motivoCancelamento,
+      bool isHistoricoEmpresa) async {
     state = const AsyncValue.loading();
     try {
       await ref
           .read(pedidoServiceProvider)
           .cancelarPedido(pedidoId, motivoCancelamento);
-      build();
+      build(true);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

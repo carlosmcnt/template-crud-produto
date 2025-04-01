@@ -135,6 +135,14 @@ class EmpresaFavoritaState extends ConsumerState<EmpresaFavorita> {
             setState(() {
               listaEmpresas = obterListaEmpresasFavoritas();
             });
+            if (!context.mounted) return;
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Empresa removida dos favoritos'),
+                duration: Duration(seconds: 2),
+              ),
+            );
           },
           child: const Text('Remover'),
         ),

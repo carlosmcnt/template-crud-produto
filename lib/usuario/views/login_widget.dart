@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:template_crud_produto/pedido/controllers/historico_pedido_controller.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
 import 'package:template_crud_produto/usuario/views/cadastro_widget.dart';
 import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
@@ -49,6 +50,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
     if (retornoLogin) {
       ref.invalidate(produtoListControllerProvider);
+      ref.invalidate(historicoPedidoControllerProvider);
 
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => const MenuPrincipalWidget(),

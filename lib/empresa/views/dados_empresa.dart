@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
+import 'package:template_crud_produto/pedido/views/historico_pedido_page.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
 import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
@@ -106,7 +107,7 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(FontAwesomeIcons.circlePlus),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(200, 50),
                       ),
@@ -122,11 +123,25 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.edit),
+                      icon: const Icon(FontAwesomeIcons.penToSquare),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(200, 50),
                       ),
                       label: const Text('Alterar Empresa')),
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => const HistoricoPedidoPage(
+                                  isHistoricoEmpresa: true)),
+                        );
+                      },
+                      icon: const Icon(FontAwesomeIcons.clockRotateLeft),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(200, 50),
+                      ),
+                      label: const Text('Histórico de Vendas')),
                   const SizedBox(height: 20),
                   listaProdutos.when(data: (produtos) {
                     final produtosAgrupados = agruparProdutosPorTipo(produtos);

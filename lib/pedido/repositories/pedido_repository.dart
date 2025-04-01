@@ -46,12 +46,12 @@ class PedidoRepository {
     });
   }
 
-  Stream<List> getPedidosPorVendedor(String usuarioId) {
+  Future<List<Pedido>> getPedidosPorVendedor(String usuarioId) async {
     return _firestore
         .collection('pedidos')
         .where('usuarioVendedorId', isEqualTo: usuarioId)
-        .snapshots()
-        .map((snapshot) {
+        .get()
+        .then((snapshot) {
       return snapshot.docs.map((doc) => Pedido.fromDocument(doc)).toList();
     });
   }

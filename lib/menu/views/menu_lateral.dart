@@ -119,7 +119,8 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             onTap: () {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => const HistoricoPedidoPage(),
+                  builder: (context) =>
+                      const HistoricoPedidoPage(isHistoricoEmpresa: false),
                 ),
               );
             },

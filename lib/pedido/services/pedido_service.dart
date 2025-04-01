@@ -30,6 +30,10 @@ class PedidoService {
     return await pedidoRepository.getPedidosPorCliente(usuarioId);
   }
 
+  Future<List<Pedido>> getPedidosPorVendedor(String usuarioId) async {
+    return await pedidoRepository.getPedidosPorVendedor(usuarioId);
+  }
+
   Future<void> cancelarPedido(
       String pedidoId, String motivoCancelamento) async {
     await pedidoRepository.cancelarPedido(pedidoId, motivoCancelamento);
