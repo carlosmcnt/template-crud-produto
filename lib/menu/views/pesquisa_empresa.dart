@@ -79,7 +79,8 @@ class PesquisaEmpresaState extends ConsumerState<PesquisaEmpresa> {
                   final empresas = removerEmpresasDuplicadas(snapshot.data!);
                   if (empresas.isEmpty) {
                     return const Center(
-                      child: Text('Nenhuma empresa encontrada'),
+                      child: Text(
+                          'Nenhuma empresa que vende essa categoria de produto foi encontrada'),
                     );
                   } else {
                     return ListView.separated(

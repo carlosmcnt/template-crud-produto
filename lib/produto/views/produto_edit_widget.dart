@@ -45,7 +45,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
         .then((categorias) {
       final categoria = categorias.firstWhere(
           (element) => element.id == produto.categoriaId,
-          orElse: () => Categoria(id: '', descricao: '', nome: ''));
+          orElse: () =>
+              Categoria(id: '', descricao: '', nome: '', icone: null));
       _categoria = categoria.id!;
     });
   }

@@ -176,8 +176,6 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
 
   Widget exibirCardPedido(Pedido pedido) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -340,8 +338,6 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

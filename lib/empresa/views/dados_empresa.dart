@@ -42,6 +42,56 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
     return listaAgrupados;
   }
 
+  void atualizarPagina() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => DadosEmpresaPage(empresa: empresa),
+      ),
+    );
+  }
+
+  void abrirPaginaHistoricoPedido() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) =>
+              const HistoricoPedidoPage(isHistoricoEmpresa: true)),
+    );
+  }
+
+  void abrirPaginaIncluirEditarProduto() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProdutoEditPage(
+          produto: Produto(
+            descricao: '',
+            valorUnitario: 0.0,
+            tipo: '',
+            sabor: '',
+            temGlutem: false,
+            temLactose: false,
+            vegano: false,
+            alergenos: [],
+            empresaId: empresa.id!,
+            categoriaId: '',
+            dataCadastro: Timestamp.now(),
+            dataUltimaAlteracao: Timestamp.now(),
+          ),
+          empresa: empresa,
+        ),
+      ),
+    );
+  }
+
+  void abrirPaginaEditarEmpresa() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EmpresaEditPage(
+          empresa: empresa,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final listaProdutos = ref.watch(dadosEmpresaControllerProvider);
@@ -51,135 +101,121 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: Center(
-            child: SizedBox(
-              child: Column(
-                children: [
-                  Card(
-                    color: Colors.grey[300],
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            FontAwesomeIcons.store,
-                            size: 50,
-                            color: Colors.black,
-                          ),
-                          Text(
-                            empresa.nomeFantasia,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            empresa.descricao,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text(
+                        empresa.nomeFantasia,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ProdutoEditPage(
-                              produto: Produto(
-                                descricao: '',
-                                valorUnitario: 0.0,
-                                tipo: '',
-                                sabor: '',
-                                temGlutem: false,
-                                temLactose: false,
-                                vegano: false,
-                                alergenos: [],
-                                empresaId: empresa.id!,
-                                categoriaId: '',
-                                dataCadastro: Timestamp.now(),
-                                dataUltimaAlteracao: Timestamp.now(),
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              const WidgetSpan(
+                                  child: Icon(FontAwesomeIcons.circleInfo)),
+                              const WidgetSpan(child: SizedBox(width: 8)),
+                              TextSpan(
+                                text: empresa.descricao,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
                               ),
-                              empresa: empresa,
-                            ),
+                            ],
                           ),
-                        );
-                      },
-                      icon: const Icon(FontAwesomeIcons.circlePlus),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(200, 50),
+                        ),
                       ),
-                      label: const Text('Adicionar Produto')),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => EmpresaEditPage(
-                              empresa: empresa,
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(FontAwesomeIcons.penToSquare),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(200, 50),
-                      ),
-                      label: const Text('Alterar Empresa')),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => const HistoricoPedidoPage(
-                                  isHistoricoEmpresa: true)),
-                        );
-                      },
-                      icon: const Icon(FontAwesomeIcons.clockRotateLeft),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(200, 50),
-                      ),
-                      label: const Text('Histórico de Vendas')),
-                  const SizedBox(height: 20),
-                  listaProdutos.when(data: (produtos) {
-                    final produtosAgrupados = agruparProdutosPorTipo(produtos);
-                    return ListView(
-                      shrinkWrap: true,
-                      children: produtosAgrupados.entries
-                          .map(
-                            (entry) => organizarProdutosPorTipo(
-                                context, entry.key, entry.value),
-                          )
-                          .toList(),
-                    );
-                  }, loading: () {
-                    return const Center(child: CircularProgressIndicator());
-                  }, error: (error, stack) {
-                    return const Center(
-                      child: Column(
+                      const SizedBox(height: 20),
+                      Wrap(
                         children: [
-                          Text('Erro ao carregar produtos'),
+                          Container(
+                            child: botaoAcaoEmpresa(
+                              icon: FontAwesomeIcons.circlePlus,
+                              label: 'Adicionar Produto',
+                              onPressed: abrirPaginaIncluirEditarProduto,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            child: botaoAcaoEmpresa(
+                              icon: FontAwesomeIcons.penToSquare,
+                              label: 'Alterar Empresa',
+                              onPressed: abrirPaginaEditarEmpresa,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            child: botaoAcaoEmpresa(
+                              icon: FontAwesomeIcons.clockRotateLeft,
+                              label: 'Histórico de Vendas',
+                              onPressed: abrirPaginaHistoricoPedido,
+                            ),
+                          ),
                         ],
                       ),
-                    );
-                  })
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 20),
+              listaProdutos.when(data: (produtos) {
+                final produtosAgrupados = agruparProdutosPorTipo(produtos);
+                return ListView(
+                  shrinkWrap: true,
+                  children: produtosAgrupados.entries
+                      .map(
+                        (entry) => organizarProdutosPorTipo(
+                            context, entry.key, entry.value),
+                      )
+                      .toList(),
+                );
+              }, loading: () {
+                return const Center(child: CircularProgressIndicator());
+              }, error: (error, stack) {
+                return const Center(
+                  child: Column(
+                    children: [
+                      Text('Erro ao carregar produtos'),
+                    ],
+                  ),
+                );
+              })
+            ],
           ),
         ),
       ),
     );
   }
 
+  Widget botaoAcaoEmpresa({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(200, 50),
+      ),
+      icon: Icon(icon),
+      label: Text(label),
+      onPressed: onPressed,
+    );
+  }
+
   Widget organizarProdutosPorTipo(
       BuildContext context, String tipo, List<Produto> produtos) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -190,12 +226,16 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            const Divider(),
             Column(
               children: produtos
                   .map(
                     (produto) => ListTile(
-                      leading: const Icon(FontAwesomeIcons.cookieBite),
+                      leading: const Icon(FontAwesomeIcons.box),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
                       title: Text(produto.sabor,
                           style: const TextStyle(fontSize: 20)),
                       subtitle: Text(
@@ -232,6 +272,15 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
                                         .read(produtoListControllerProvider
                                             .notifier)
                                         .deletarProduto(produto);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Produto excluído com sucesso!'),
+                                      ),
+                                    );
+
+                                    atualizarPagina();
                                   },
                                   child: const Text('Excluir'),
                                 ),

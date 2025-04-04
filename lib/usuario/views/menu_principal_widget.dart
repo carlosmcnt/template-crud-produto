@@ -28,17 +28,21 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
     super.initState();
     listaCategorias =
         ref.read(categoriaRepositoryProvider).getCategoriasAtivas();
+    setState(() {
+      textoPesquisa = '';
+      categoriasEmExibicao = totalCategorias.take(5).toList();
+    });
   }
 
   void atualizarCategoriasEmExibicao(String textoPesquisa) {
     if (textoPesquisa.isEmpty) {
       setState(() {
-        categoriasEmExibicao = totalCategorias.take(5).toList();
+        categoriasEmExibicao = totalCategorias.take(10).toList();
       });
     } else {
       final buscaFuzzy = Fuzzy(
         totalCategorias.map((categoria) => categoria.nome).toList(),
-        options: FuzzyOptions(findAllMatches: true, threshold: 0.3),
+        options: FuzzyOptions(findAllMatches: true, threshold: 0.6),
       );
       final listaFiltrada = buscaFuzzy.search(textoPesquisa);
 
@@ -85,6 +89,15 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
                           atualizarCategoriasEmExibicao(texto);
                         });
                       },
+                      trailing: const [
+                        Tooltip(
+                          message: 'As primeiras 5 categorias são exibidas. \n'
+                              'Digite para pesquisar por outras categorias possíveis.',
+                          child: Icon(
+                            FontAwesomeIcons.circleQuestion,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                     Expanded(
@@ -111,7 +124,7 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: ListTile(
-        leading: const FaIcon(FontAwesomeIcons.store),
+        leading: categoria.icone != null ? Icon(categoria.icone) : null,
         title: Text(categoria.nome),
         subtitle: Text(categoria.descricao),
         onTap: () {

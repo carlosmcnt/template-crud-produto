@@ -72,8 +72,11 @@ class Tema {
       ),
       listTileTheme: ListTileThemeData(
         tileColor: backgroundColor,
-        iconColor: accentColor,
+        iconColor: primaryColor,
         textColor: textPrimaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
@@ -144,11 +147,12 @@ class Tema {
       ),
       cardTheme: CardTheme(
         color: backgroundColor,
+        elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: accentColor,
-            width: 3,
+          side: const BorderSide(
+            width: 1,
+            style: BorderStyle.solid,
           ),
         ),
       ),
