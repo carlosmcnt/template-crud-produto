@@ -36,7 +36,6 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   bool _temGlutem = false;
   bool _vegano = false;
   Produto get produto => widget.produto;
-  NormalizadorMoeda normalizador = NormalizadorMoeda();
 
   void carregarCategoria() {
     ref
@@ -79,31 +78,35 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Incluir/Editar Produto', []),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                keyboardType: TextInputType.multiline,
-                maxLines: 5,
-                minLines: 3,
-                maxLength: 200,
-                controller: _descricaoController,
-                decoration: InputDecoration(
-                  labelText: 'Descrição do produto:',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  prefixIcon: const Icon(FontAwesomeIcons.circleInfo),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 100,
+                child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  expands: true,
+                  maxLength: 200,
+                  controller: _descricaoController,
+                  decoration: InputDecoration(
+                    labelText: 'Descrição do produto:',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    prefixIcon: const Icon(FontAwesomeIcons.circleInfo),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Descrição é obrigatória';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Descrição é obrigatória';
-                  }
-                  return null;
-                },
               ),
               TextFormField(
                 controller: _valorController,
@@ -123,7 +126,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   if (value == null || value.isEmpty) {
                     return 'Valor unitário é obrigatório';
                   }
-                  if (normalizador.normalizarMoeda(value) <= 0) {
+                  if (NormalizadorMoeda.normalizar(value) <= 0) {
                     return 'Valor unitário deve ser maior que zero';
                   }
                   return null;
@@ -173,6 +176,11 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   prefixIcon: const Icon(FontAwesomeIcons.clipboardList),
+                  suffixIcon: const Tooltip(
+                    message:
+                        'Para melhor visualização do agrupamento dos items na lista de produtos, utilize o mesmo nome do tipo para produtos semelhantes.',
+                    child: Icon(FontAwesomeIcons.info),
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -180,6 +188,9 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   }
                   return null;
                 },
+                inputFormatters: [
+                  FormatadorLetrasMaiusculas(),
+                ],
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -305,7 +316,7 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   final novoProduto = produto.copyWith(
                     descricao: _descricaoController.text,
                     valorUnitario:
-                        normalizador.normalizarMoeda(_valorController.text),
+                        NormalizadorMoeda.normalizar(_valorController.text),
                     tipo: _tipoController.text,
                     sabor: _saborController.text,
                     temGlutem: _temGlutem,
@@ -319,6 +330,8 @@ class ProdutoEditPageState extends ConsumerState<ProdutoEditPage> {
                   await ref
                       .read(produtoListControllerProvider.notifier)
                       .inserirOuAtualizarProduto(novoProduto);
+
+                  ref.invalidate(produtoListControllerProvider);
 
                   if (context.mounted) {
                     Navigator.of(context).pop(true);

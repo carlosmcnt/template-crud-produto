@@ -16,25 +16,17 @@ class EncomendaController extends _$EncomendaController {
   }
 
   Future<List<Produto>> listarProdutos(String empresaId) async {
-    state = const AsyncValue.loading();
-    try {
-      final empresa =
-          await ref.read(empresaServiceProvider).obterEmpresaPorId(empresaId);
+    final empresa =
+        await ref.read(empresaServiceProvider).obterEmpresaPorId(empresaId);
 
-      if (empresa != null) {
-        final produtos = await ref
-            .read(produtoServiceProvider)
-            .getProdutosPorEmpresa(empresa.id!);
-        state = AsyncValue.data(produtos);
-        return produtos;
-      } else {
-        state = const AsyncValue.data([]);
-        return [];
-      }
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-      return [];
+    if (empresa != null) {
+      final produtos = await ref
+          .read(produtoServiceProvider)
+          .getProdutosPorEmpresa(empresa.id!);
+      state = AsyncValue.data(produtos);
+      return produtos;
     }
+    return [];
   }
 
   Future<List<String>> obterTiposDeProduto() async {
@@ -62,5 +54,35 @@ class EncomendaController extends _$EncomendaController {
   Future<String> obterIdUsuarioLogado() async {
     final usuario = await ref.read(usuarioServiceProvider).obterUsuarioLogado();
     return usuario.id!;
+  }
+
+  Future<List<Produto>> obterProdutosPorIds(List<String> ids) async {
+    List<Produto> produtos = [];
+    for (String id in ids) {
+      final produto = await ref.read(produtoServiceProvider).getProdutoById(id);
+      if (produto != null) {
+        produtos.add(produto);
+      }
+    }
+    return produtos;
+  }
+
+  Future<Produto> obterProdutoPorId(String id) async {
+    final produto = await ref.read(produtoServiceProvider).getProdutoById(id);
+    if (produto != null) {
+      return produto;
+    } else {
+      throw Exception('Produto não encontrado');
+    }
+  }
+
+  Future<String> obterEmpresaPorIdProduto(String produtoId) async {
+    final produto =
+        await ref.read(produtoServiceProvider).getProdutoById(produtoId);
+    if (produto != null) {
+      return produto.empresaId;
+    } else {
+      throw Exception('Produto não encontrado');
+    }
   }
 }

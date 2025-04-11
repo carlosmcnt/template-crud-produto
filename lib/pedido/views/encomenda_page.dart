@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/pedido/controllers/encomenda_controller.dart';
 import 'package:template_crud_produto/pedido/models/item_pedido.dart';
 import 'package:template_crud_produto/pedido/models/pedido.dart';
 import 'package:template_crud_produto/pedido/models/status_pedido.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -130,7 +130,10 @@ class EncomendaPageState extends ConsumerState<EncomendaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes(
+        "Realizar Encomenda",
+        [],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -256,7 +259,7 @@ class EncomendaPageState extends ConsumerState<EncomendaPage> {
                     child: Column(
                       children: [
                         Text(
-                          "Total: R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(precoTotal)}",
+                          FormatadorMoedaReal.formatarValorReal(precoTotal),
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
@@ -353,8 +356,8 @@ class EncomendaPageState extends ConsumerState<EncomendaPage> {
                 height: 80,
                 child: ListTile(
                   title: Text(produto.sabor),
-                  subtitle: Text(
-                      "R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(produto.valorUnitario)}"),
+                  subtitle: Text(FormatadorMoedaReal.formatarValorReal(
+                      produto.valorUnitario)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

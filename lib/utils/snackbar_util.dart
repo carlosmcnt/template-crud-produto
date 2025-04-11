@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Estilos {
-  snackbarStatus(
+class SnackBarUtil {
+  static void showSnackbar(
       {required String mensagem,
       required BuildContext context,
       required bool erro}) {

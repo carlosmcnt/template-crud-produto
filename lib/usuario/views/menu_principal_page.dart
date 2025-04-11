@@ -5,19 +5,19 @@ import 'package:fuzzy/fuzzy.dart';
 import 'package:template_crud_produto/categoria/models/categoria.dart';
 import 'package:template_crud_produto/categoria/repositories/categoria_repository.dart';
 import 'package:template_crud_produto/menu/views/menu_lateral.dart';
-import 'package:template_crud_produto/menu/views/pesquisa_empresa.dart';
+import 'package:template_crud_produto/menu/views/pesquisa_empresa_page.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
-class MenuPrincipalWidget extends ConsumerStatefulWidget {
-  const MenuPrincipalWidget({super.key});
+class MenuPrincipalPage extends ConsumerStatefulWidget {
+  const MenuPrincipalPage({super.key});
 
   @override
-  ConsumerState<MenuPrincipalWidget> createState() {
+  ConsumerState<MenuPrincipalPage> createState() {
     return MenuPrincipalWidgetState();
   }
 }
 
-class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
+class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalPage> {
   late Future<List<Categoria>> listaCategorias;
   List<Categoria> categoriasEmExibicao = [];
   List<Categoria> totalCategorias = [];
@@ -61,7 +61,7 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.menuPrincipal(),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
@@ -130,7 +130,7 @@ class MenuPrincipalWidgetState extends ConsumerState<MenuPrincipalWidget> {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => PesquisaEmpresa(categoria: categoria),
+              builder: (context) => PesquisaEmpresaPage(categoria: categoria),
             ),
           );
         },

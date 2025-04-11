@@ -1,18 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Empresa {
-
   final String? id;
   final String usuarioId;
   final String nomeFantasia;
   final String chavePix;
   final String descricao;
   final String logomarca;
-  final List<String> locaisEntrega; 
+  final List<String> locaisEntrega;
   final Timestamp dataCadastro;
   final Timestamp dataUltimaAlteracao;
 
-  Empresa({this.id, required this.nomeFantasia, required this.usuarioId ,required this.chavePix, required this.descricao, required this.logomarca, required this.locaisEntrega,required this.dataCadastro, required this.dataUltimaAlteracao});
+  Empresa(
+      {this.id,
+      required this.nomeFantasia,
+      required this.usuarioId,
+      required this.chavePix,
+      required this.descricao,
+      required this.logomarca,
+      required this.locaisEntrega,
+      required this.dataCadastro,
+      required this.dataUltimaAlteracao});
+
+  factory Empresa.empty(String usuarioId) {
+    return Empresa(
+      nomeFantasia: '',
+      usuarioId: usuarioId,
+      chavePix: '',
+      descricao: '',
+      logomarca: '',
+      locaisEntrega: [],
+      dataCadastro: Timestamp.now(),
+      dataUltimaAlteracao: Timestamp.now(),
+    );
+  }
 
   factory Empresa.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -65,5 +86,4 @@ class Empresa {
       dataUltimaAlteracao: dataUltimaAlteracao ?? this.dataUltimaAlteracao,
     );
   }
-
 }

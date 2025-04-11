@@ -1,4 +1,3 @@
-import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -58,7 +57,7 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Incluir/Editar Empresa', []),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Center(
@@ -126,18 +125,13 @@ class EmpresaEditPageState extends ConsumerState<EmpresaEditPage> {
                     if (ignorarTipoChavePix) {
                       return null;
                     }
-                    if (Validador()
-                            .validarChavePixSelecionada(value, tipoChavePix) ==
+                    if (Validador.validarChavePixSelecionada(
+                            value, tipoChavePix) ==
                         false) {
                       return 'Chave PIX inválida';
                     }
                     return null;
                   },
-                  inputFormatters: () {
-                    if (tipoChavePix == 'Telefone') {
-                      return [BRMasks.mobilePhone];
-                    }
-                  }(),
                 ),
                 const SizedBox(height: 15),
                 TextFormField(

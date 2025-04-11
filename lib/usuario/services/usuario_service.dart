@@ -4,49 +4,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/repositories/usuario_repository.dart';
-import 'package:template_crud_produto/utils/estilos.dart';
+import 'package:template_crud_produto/utils/snackbar_util.dart';
 
 part 'usuario_service.g.dart';
 
 class UsuarioService {
   final UsuarioRepository usuarioRepository;
-  Estilos estilos = Estilos();
 
   UsuarioService({required this.usuarioRepository});
 
-  Future<bool> login(String email, String senha, BuildContext context) async {
+  Future<dynamic> login(
+      String email, String senha, BuildContext context) async {
     final resultado =
         await usuarioRepository.entrar(email: email, senha: senha);
-    if (resultado != null) {
-      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
-    } else {
-      estilos.snackbarStatus(
-          mensagem: 'Login realizado com sucesso!',
-          context: context,
-          erro: false);
+    if (resultado == true) {
+      SnackBarUtil.showSnackbar(
+        mensagem: 'Login realizado com sucesso!',
+        context: context,
+        erro: false,
+      );
       return true;
+    } else {
+      SnackBarUtil.showSnackbar(
+        mensagem: resultado,
+        context: context,
+        erro: true,
+      );
+      return false;
     }
-    return false;
   }
 
-  // Método para logout
   Future<void> logout() async {
     await usuarioRepository.sair();
   }
 
-  Future<void> redefinirSenha(String email, BuildContext context) async {
+  Future<dynamic> redefinirSenha(String email, BuildContext context) async {
     final resultado = await usuarioRepository.redefinirSenha(email: email);
-    if (resultado != null) {
-      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
+    if (resultado == true) {
+      SnackBarUtil.showSnackbar(
+        mensagem: 'Redefinição de senha enviada para o e-mail!',
+        context: context,
+        erro: false,
+      );
     } else {
-      estilos.snackbarStatus(
-          mensagem: 'E-mail de redefinição de senha enviado!',
-          context: context,
-          erro: false);
+      SnackBarUtil.showSnackbar(
+        mensagem: resultado,
+        context: context,
+        erro: true,
+      );
     }
   }
 
-  Future<bool> registrar(
+  Future<dynamic> registrar(
       {required String nome,
       required String email,
       required String cpf,
@@ -60,19 +69,24 @@ class UsuarioService {
       senha: senha,
       telefone: telefone,
     );
-    if (resultado != null) {
-      estilos.snackbarStatus(mensagem: resultado, context: context, erro: true);
-    } else {
-      estilos.snackbarStatus(
-          mensagem: 'Cadastro realizado com sucesso!',
-          context: context,
-          erro: false);
+    if (resultado == true) {
+      SnackBarUtil.showSnackbar(
+        mensagem: 'Cadastro realizado com sucesso!',
+        context: context,
+        erro: false,
+      );
       return true;
+    } else {
+      SnackBarUtil.showSnackbar(
+        mensagem: resultado,
+        context: context,
+        erro: true,
+      );
+      return false;
     }
-    return false;
   }
 
-  Future<String?> obterIdUsuarioLogado() async {
+  Future<String> obterIdUsuarioLogado() async {
     return await usuarioRepository.obterIdUsuarioLogado();
   }
 

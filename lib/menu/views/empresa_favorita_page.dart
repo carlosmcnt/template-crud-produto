@@ -5,18 +5,18 @@ import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/menu/controllers/empresa_favorita_controller.dart';
 import 'package:template_crud_produto/menu/views/menu_lateral.dart';
 import 'package:template_crud_produto/utils/tema.dart';
-import 'package:template_crud_produto/empresa/views/dados_empresa_comprador.dart';
+import 'package:template_crud_produto/empresa/views/visualizacao_empresa.dart';
 
-class EmpresaFavorita extends ConsumerStatefulWidget {
-  const EmpresaFavorita({super.key});
+class EmpresaFavoritaPage extends ConsumerStatefulWidget {
+  const EmpresaFavoritaPage({super.key});
 
   @override
-  ConsumerState<EmpresaFavorita> createState() {
-    return EmpresaFavoritaState();
+  ConsumerState<EmpresaFavoritaPage> createState() {
+    return EmpresaFavoritaPageState();
   }
 }
 
-class EmpresaFavoritaState extends ConsumerState<EmpresaFavorita> {
+class EmpresaFavoritaPageState extends ConsumerState<EmpresaFavoritaPage> {
   late Future<List<Empresa>> listaEmpresas;
 
   Future<List<Empresa>> obterListaEmpresasFavoritas() {
@@ -34,26 +34,12 @@ class EmpresaFavoritaState extends ConsumerState<EmpresaFavorita> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Minhas Empresas Favoritas', []),
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(
             child: Column(
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8.0),
-                  color: Colors.grey[300],
-                  child: const Text(
-                    'EMPRESAS FAVORITAS',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 10),
                 Expanded(
                   child: FutureBuilder<List<Empresa>>(
                     future: listaEmpresas,
@@ -85,7 +71,7 @@ class EmpresaFavoritaState extends ConsumerState<EmpresaFavorita> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
-                          DadosEmpresaCompradorPage(empresa: empresa)));
+                          VisualizacaoEmpresaPage(empresa: empresa)));
                 },
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),

@@ -30,6 +30,24 @@ class Produto {
       required this.dataCadastro,
       required this.dataUltimaAlteracao});
 
+  factory Produto.empty(String empresaId) {
+    return Produto(
+      id: null,
+      descricao: '',
+      valorUnitario: 0.0,
+      tipo: '',
+      sabor: '',
+      temGlutem: false,
+      temLactose: false,
+      vegano: false,
+      alergenos: [],
+      empresaId: empresaId,
+      categoriaId: '',
+      dataCadastro: Timestamp.now(),
+      dataUltimaAlteracao: Timestamp.now(),
+    );
+  }
+
   factory Produto.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Produto(

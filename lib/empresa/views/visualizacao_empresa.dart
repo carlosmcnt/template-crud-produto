@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/pedido/views/encomenda_page.dart';
+import 'package:template_crud_produto/pedido/views/pedido_page.dart';
 import 'package:template_crud_produto/usuario/models/usuario_empresa.dart';
 import 'package:template_crud_produto/usuario/repositories/usuario_empresa_repository.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
-class DadosEmpresaCompradorPage extends ConsumerStatefulWidget {
+class VisualizacaoEmpresaPage extends ConsumerStatefulWidget {
   final Empresa empresa;
 
-  const DadosEmpresaCompradorPage({super.key, required this.empresa});
+  const VisualizacaoEmpresaPage({super.key, required this.empresa});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return DadosEmpresaCompradorPageState();
+    return VisualizacaoEmpresaPageState();
   }
 }
 
-class DadosEmpresaCompradorPageState
-    extends ConsumerState<DadosEmpresaCompradorPage> {
+class VisualizacaoEmpresaPageState
+    extends ConsumerState<VisualizacaoEmpresaPage> {
   Empresa get empresa => widget.empresa;
 
   @override
@@ -29,7 +30,7 @@ class DadosEmpresaCompradorPageState
     final listaProdutos = ref.watch(dadosEmpresaControllerProvider);
 
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Visualizar Empresa', []),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -58,7 +59,15 @@ class DadosEmpresaCompradorPageState
                 runSpacing: 8,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PedidoPage(
+                            empresa: empresa,
+                          ),
+                        ),
+                      );
+                    },
                     icon: const Icon(FontAwesomeIcons.cartShopping),
                     label: const Text("Realizar Pedido"),
                   ),
@@ -105,7 +114,8 @@ class DadosEmpresaCompradorPageState
                       .map((produto) => ListTile(
                             title: Text(produto.descricao),
                             subtitle: Text(
-                                "R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(produto.valorUnitario)}"),
+                                FormatadorMoedaReal.formatarValorReal(
+                                    produto.valorUnitario)),
                             leading: const Icon(FontAwesomeIcons.circleInfo),
                           ))
                       .toList(),
@@ -184,7 +194,7 @@ class DadosEmpresaCompradorPageState
 
               await ref
                   .read(dadosEmpresaControllerProvider.notifier)
-                  .adicionarEmpresaFavorita(usuarioEmpresa);
+                  .adicionarEmpresaFavoritaPagePage(usuarioEmpresa);
             }
 
             if (!context.mounted) return;

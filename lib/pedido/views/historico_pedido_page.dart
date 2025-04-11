@@ -9,7 +9,9 @@ import 'package:template_crud_produto/pedido/controllers/historico_pedido_contro
 import 'package:template_crud_produto/pedido/models/item_pedido.dart';
 import 'package:template_crud_produto/pedido/models/pedido.dart';
 import 'package:template_crud_produto/pedido/models/status_pedido.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/gerador_codigo_pedido.dart';
+import 'package:template_crud_produto/utils/tema.dart';
 
 class HistoricoPedidoPage extends ConsumerStatefulWidget {
   const HistoricoPedidoPage({super.key, required this.isHistoricoEmpresa});
@@ -24,7 +26,7 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
   List<Pedido> listaPedidosFinal = [];
   String statusSelecionado = "Todos";
   late List<String> listaStatus;
-  bool isOrdenacaoAscendente = false;
+  bool isOrdenacaoDecrescente = true;
   int registrosPorPagina = 5;
   int paginaAtual = 1;
   final TextEditingController _motivoCancelamentoController =
@@ -47,10 +49,9 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
     List<Pedido> listaPedidos = _aplicarFiltros(pedidosAsync);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Histórico de Pedidos'),
-        actions: [exibirFiltroStatus()],
+      appBar: Tema.descricaoAcoes(
+        "Histórico de Pedidos",
+        [exibirFiltroStatus()],
       ),
       drawer: const MenuLateralWidget(),
       body: SingleChildScrollView(
@@ -126,8 +127,8 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
   Widget exibirPaginacaoOrdenacao() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.center,
         children: [
           Row(
             children: [
@@ -153,17 +154,16 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
               ),
             ],
           ),
-          // Controle de ordenação
           Row(
             children: [
               const Text("Ordenação: "),
               const SizedBox(width: 8),
-              Text(isOrdenacaoAscendente ? "Decrescente" : "Crescente"),
+              Text(isOrdenacaoDecrescente ? "Decrescente" : "Crescente"),
               Switch(
-                value: isOrdenacaoAscendente,
+                value: isOrdenacaoDecrescente,
                 onChanged: (bool value) {
                   setState(() {
-                    isOrdenacaoAscendente = value;
+                    isOrdenacaoDecrescente = value;
                   });
                 },
               ),
@@ -217,7 +217,7 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
             const Text("Valor a ser pago:",
                 style: TextStyle(color: Colors.black54)),
             Text(
-              "R\$${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(pedido.valorTotal)}",
+              FormatadorMoedaReal.formatarValorReal(pedido.valorTotal),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -256,7 +256,7 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
 
     listaPedidosFinal.sort((a, b) {
       int cmp = a.dataPedido.toDate().compareTo(b.dataPedido.toDate());
-      return isOrdenacaoAscendente ? -cmp : cmp;
+      return isOrdenacaoDecrescente ? -cmp : cmp;
     });
 
     int totalRegistros = listaPedidosFinal.length;
@@ -309,8 +309,7 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
             children: [
               Text("${dados['descricao']}"),
               const SizedBox(width: 8),
-              Text(
-                  "R\$${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(dados['preco'])}"),
+              Text(FormatadorMoedaReal.formatarValorReal(dados['preco'])),
               const SizedBox(width: 8),
               Text("(x${item.quantidade})"),
             ],
@@ -354,9 +353,9 @@ class _HistoricoPedidoPageState extends ConsumerState<HistoricoPedidoPage> {
                   exibirDadosResumoVendas(
                       "Total de Vendas", "$quantidadeVendas"),
                   exibirDadosResumoVendas("Valor Total",
-                      "R\$${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(totalVendas)}"),
+                      FormatadorMoedaReal.formatarValorReal(totalVendas)),
                   exibirDadosResumoVendas("Ticket Médio",
-                      "R\$${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(ticketMedio)}"),
+                      FormatadorMoedaReal.formatarValorReal(ticketMedio)),
                 ],
               ),
             ],

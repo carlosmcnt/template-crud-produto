@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class NormalizadorMoeda {
-  double normalizarMoeda(String value) {
+  static double normalizar(String value) {
     String normalized = value
         .replaceAll(
             NumberFormat.currency(
@@ -31,6 +31,10 @@ class FormatadorMoedaReal extends TextInputFormatter {
     return newValue.copyWith(
         text: valorFormatado,
         selection: TextSelection.collapsed(offset: valorFormatado.length));
+  }
+
+  static String formatarValorReal(double valor) {
+    return "R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(valor)}";
   }
 }
 

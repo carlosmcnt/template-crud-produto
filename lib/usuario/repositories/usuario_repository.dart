@@ -13,7 +13,7 @@ class UsuarioRepository {
 
   UsuarioRepository(this._auth, this._firestore);
 
-  Future<String?> registrar({
+  Future<dynamic> registrar({
     required String nomeCompleto,
     required String email,
     required String cpf,
@@ -37,17 +37,16 @@ class UsuarioRepository {
         'dataCadastro': Timestamp.now(),
         'dataUltimaAlteracao': Timestamp.now(),
       });
+
+      return true;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
           return 'O e-mail informado já está em uso';
-        case 'weak-password':
-          return 'A senha informada é muito fraca';
         default:
           return 'Erro ao registrar, tente novamente mais tarde';
       }
     }
-    return null;
   }
 
   Future<Usuario> obterUsuarioAtual() async {
@@ -68,7 +67,7 @@ class UsuarioRepository {
     await _auth.signOut();
   }
 
-  Future<String?> entrar({
+  Future<dynamic> entrar({
     required String email,
     required String senha,
   }) async {
@@ -77,29 +76,36 @@ class UsuarioRepository {
         email: email,
         password: senha,
       );
+
+      return true;
     } on FirebaseAuthException {
       return 'Erro ao fazer login, verifique suas credenciais e tente novamente';
     }
-    return null;
   }
 
-  Future<String?> redefinirSenha({
+  Future<dynamic> redefinirSenha({
     required String email,
   }) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
+
+      return true;
     } on FirebaseAuthException {
       return 'Não foi possível enviar o e-mail de redefinição de senha, verifique o e-mail informado e tente novamente';
     }
-    return null;
   }
 
-  Future<String?> obterIdUsuarioLogado() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      return user.uid;
+  Future<String> obterIdUsuarioLogado() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        throw FirebaseAuthException(code: 'user-not-found');
+      }
+    } catch (e) {
+      return 'Erro ao obter ID do usuário: $e';
     }
-    return null;
   }
 
   Future<void> atualizarUsuario(Usuario usuario) async {

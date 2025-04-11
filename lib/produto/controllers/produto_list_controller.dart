@@ -18,7 +18,7 @@ class ProdutoListController extends _$ProdutoListController {
           await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
       final empresa = await ref
           .read(empresaServiceProvider)
-          .obterEmpresaPorUsuarioId(usuarioId!);
+          .obterEmpresaPorUsuarioId(usuarioId);
 
       if (empresa != null) {
         final produtos = await ref
@@ -43,7 +43,7 @@ class ProdutoListController extends _$ProdutoListController {
           await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
       final empresa = await ref
           .read(empresaServiceProvider)
-          .obterEmpresaPorUsuarioId(usuarioId!);
+          .obterEmpresaPorUsuarioId(usuarioId);
 
       if (empresa != null) {
         final produtos = await ref
@@ -71,7 +71,7 @@ class ProdutoListController extends _$ProdutoListController {
         await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
     final empresa = await ref
         .read(empresaServiceProvider)
-        .obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+        .obterEmpresaPorUsuarioId(idUsuarioAtivo);
     state = await AsyncValue.guard(() async {
       return ref
           .read(produtoServiceProvider)
@@ -97,7 +97,7 @@ class ProdutoListController extends _$ProdutoListController {
         await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
     final empresa = await ref
         .read(empresaServiceProvider)
-        .obterEmpresaPorUsuarioId(idUsuarioAtivo!);
+        .obterEmpresaPorUsuarioId(idUsuarioAtivo);
     state = await AsyncValue.guard(() async {
       return ref
           .read(produtoServiceProvider)

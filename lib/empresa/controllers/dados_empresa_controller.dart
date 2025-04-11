@@ -18,7 +18,7 @@ class DadosEmpresaController extends _$DadosEmpresaController {
           await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
       final empresa = await ref
           .read(empresaServiceProvider)
-          .obterEmpresaPorUsuarioId(usuarioId!);
+          .obterEmpresaPorUsuarioId(usuarioId);
 
       if (empresa != null) {
         final produtos = await ref
@@ -36,12 +36,13 @@ class DadosEmpresaController extends _$DadosEmpresaController {
     }
   }
 
-  Future<void> adicionarEmpresaFavorita(UsuarioEmpresa usuarioEmpresa) async {
+  Future<void> adicionarEmpresaFavoritaPagePage(
+      UsuarioEmpresa usuarioEmpresa) async {
     await ref.read(usuarioEmpresaServiceProvider).adicionar(usuarioEmpresa);
   }
 
   Future<String> obterIdUsuarioLogado() async {
     String? id = await ref.read(usuarioServiceProvider).obterIdUsuarioLogado();
-    return id!;
+    return id;
   }
 }

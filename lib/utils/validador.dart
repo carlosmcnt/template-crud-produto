@@ -2,29 +2,54 @@ import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 
 class Validador {
-  bool emailValido(String email) {
+  static bool emailValido(String email) {
     String padrao =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(padrao);
     return (!regex.hasMatch(email)) ? false : true;
   }
 
-  bool telefoneValido(String telefone) {
-    String padrao = r'^\([1-9]{2}\) [2-9][0-9]{3,4}\-[0-9]{4}$';
+  static bool validarSenhaForte(String senha) {
+    String padrao =
+        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
     RegExp regex = RegExp(padrao);
-    return (!regex.hasMatch(telefone)) ? false : true;
+    return (!regex.hasMatch(senha)) ? false : true;
   }
 
-  bool validarChavePixSelecionada(String valorChave, String tipo) {
+  static String aplicarMascaraCPF(String cpf) {
+    String padrao = r'(\d{3})(\d{3})(\d{3})(\d{2})';
+    RegExp regex = RegExp(padrao);
+    return cpf.replaceAllMapped(
+        regex, (Match m) => '${m[1]}.${m[2]}.${m[3]}-${m[4]}');
+  }
+
+  static String aplicarMascaraCNPJ(String cnpj) {
+    String padrao = r'(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})';
+    RegExp regex = RegExp(padrao);
+    return cnpj.replaceAllMapped(
+        regex, (Match m) => '${m[1]}.${m[2]}.${m[3]}/${m[4]}-${m[5]}');
+  }
+
+  static String aplicarMascaraTelefoneComDDD(String telefone) {
+    String padrao = r'(\d{2})(\d{5})(\d{4})';
+    RegExp regex = RegExp(padrao);
+    return telefone.replaceAllMapped(
+        regex, (Match m) => '(${m[1]}) ${m[2]}-${m[3]}');
+  }
+
+  static bool validarChavePixSelecionada(String valorChave, String tipo) {
     switch (tipo) {
       case 'E-mail':
         return emailValido(valorChave);
       case 'Chave Aleatória':
         return valorChave.length == 32;
       case 'CPF':
-        return BRValidators.validateCPF(valorChave);
+        return BRValidators.validateCPF(aplicarMascaraCPF(valorChave));
       case 'CNPJ':
-        return BRValidators.validateCNPJ(valorChave);
+        return BRValidators.validateCNPJ(aplicarMascaraCNPJ(valorChave));
+      case 'Telefone':
+        return BRValidators.validateMobileNumber(
+            aplicarMascaraTelefoneComDDD(valorChave));
       default:
         return false;
     }

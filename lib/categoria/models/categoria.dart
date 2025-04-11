@@ -42,12 +42,4 @@ class Categoria {
     };
     return iconMap[iconName];
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'nome': nome,
-      'descricao': descricao,
-      'ativo': ativo,
-    };
-  }
 }

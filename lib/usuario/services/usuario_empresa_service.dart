@@ -14,7 +14,7 @@ class UsuarioEmpresaService {
     await usuarioEmpresaRepository.adicionar(usuarioEmpresa);
   }
 
-  Future<void> removerEmpresaFavorita(
+  Future<void> removerEmpresaFavoritaPagePage(
       String idUsuario, String idEmpresa) async {
     await usuarioEmpresaRepository.removerEmpresaFavorita(idUsuario, idEmpresa);
   }

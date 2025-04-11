@@ -1,15 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:template_crud_produto/empresa/controllers/dados_empresa_controller.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
+import 'package:template_crud_produto/empresa/views/empresa_edit_page.dart';
 import 'package:template_crud_produto/pedido/views/historico_pedido_page.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 import 'package:template_crud_produto/produto/models/produto.dart';
-import 'package:template_crud_produto/produto/views/produto_edit_widget.dart';
+import 'package:template_crud_produto/produto/views/produto_edit_page.dart';
+import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
 class DadosEmpresaPage extends ConsumerStatefulWidget {
@@ -62,20 +61,7 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ProdutoEditPage(
-          produto: Produto(
-            descricao: '',
-            valorUnitario: 0.0,
-            tipo: '',
-            sabor: '',
-            temGlutem: false,
-            temLactose: false,
-            vegano: false,
-            alergenos: [],
-            empresaId: empresa.id!,
-            categoriaId: '',
-            dataCadastro: Timestamp.now(),
-            dataUltimaAlteracao: Timestamp.now(),
-          ),
+          produto: Produto.empty(empresa.id!),
           empresa: empresa,
         ),
       ),
@@ -97,7 +83,7 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
     final listaProdutos = ref.watch(dadosEmpresaControllerProvider);
 
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Minha Empresa', []),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -239,7 +225,8 @@ class DadosEmpresaPageState extends ConsumerState<DadosEmpresaPage> {
                       title: Text(produto.sabor,
                           style: const TextStyle(fontSize: 20)),
                       subtitle: Text(
-                          'R\$ ${NumberFormat.currency(locale: 'pt_BR', symbol: '').format(produto.valorUnitario)}',
+                          FormatadorMoedaReal.formatarValorReal(
+                              produto.valorUnitario),
                           style: const TextStyle(fontSize: 16)),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(

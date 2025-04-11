@@ -1,29 +1,29 @@
 import 'package:br_validators/br_validators.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
-import 'package:template_crud_produto/empresa/views/empresa_edit_widget.dart';
+import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
+import 'package:template_crud_produto/empresa/views/empresa_edit_page.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
-import 'package:template_crud_produto/produto/views/produto_list_widget.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/menu/controllers/dados_usuario_controller.dart';
-import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_page.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/tema.dart';
 
-class DadosUsuario extends ConsumerStatefulWidget {
-  const DadosUsuario({super.key, required this.usuario});
+class ConfiguracaoPage extends ConsumerStatefulWidget {
+  const ConfiguracaoPage({super.key, required this.usuario});
 
   final Usuario usuario;
 
   @override
-  ConsumerState<DadosUsuario> createState() {
-    return DadosUsuarioState();
+  ConsumerState<ConfiguracaoPage> createState() {
+    return ConfiguracaoPageState();
   }
 }
 
-class DadosUsuarioState extends ConsumerState<DadosUsuario> {
+class ConfiguracaoPageState extends ConsumerState<ConfiguracaoPage> {
   late TextEditingController _nomeController;
   late TextEditingController _emailController;
   late TextEditingController _cpfController;
@@ -49,57 +49,40 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
     super.dispose();
   }
 
-  AlertDialog dialogoConfirmacaoAlteracao(BuildContext context, WidgetRef ref) {
-    return AlertDialog(
-      title: const Text('Alterar Dados'),
-      content: const Text('Deseja realmente confirmar as alterações?'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () async {
-            Usuario novoUsuario = usuario.copyWith(
-              nomeCompleto: _nomeController.text,
-              telefone: _telefoneController.text,
-            );
-
-            await ref
-                .read(dadosUsuarioControllerProvider.notifier)
-                .atualizarUsuario(novoUsuario);
-
-            if (!context.mounted) return;
-
-            ref.invalidate(menuLateralControllerProvider);
-            ref.invalidate(dadosUsuarioControllerProvider);
-
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const MenuPrincipalWidget(),
-              ),
-            );
-          },
-          child: const Text('Sim'),
-        ),
-        TextButton(
-          onPressed: () {
-            _nomeController.text = usuario.nomeCompleto;
-            _telefoneController.text = usuario.telefone;
-            Navigator.of(context).pop();
-          },
-          child: const Text('Não'),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Tema.appBar(),
+      appBar: Tema.descricaoAcoes('Minhas configurações', []),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(20),
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
+              Card(
+                  child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    Icon(
+                      FontAwesomeIcons.user,
+                      size: 30,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Visualize e altere seus dados pessoais',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 16),
               ListView(
                 shrinkWrap: true,
                 children: [
@@ -145,15 +128,26 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                     decoration: const InputDecoration(
                       labelText: 'Telefone',
                     ),
-                    inputFormatters: [
-                      BRMasks.mobilePhone,
-                    ],
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) =>
+                        BRValidators.validateMobileNumber(value!)
+                            ? null
+                            : 'Telefone inválido',
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
                     children: <Widget>[
-                      ElevatedButton(
+                      ElevatedButton.icon(
+                        label: habilitarEdicao
+                            ? const Text('Salvar')
+                            : const Text('Editar'),
+                        icon: const Icon(FontAwesomeIcons.check),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: habilitarEdicao
+                              ? Colors.green
+                              : const Color.fromARGB(255, 223, 202, 21),
+                        ),
                         onPressed: () async {
                           setState(() {
                             habilitarEdicao = !habilitarEdicao;
@@ -167,16 +161,20 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                             );
                           }
                         },
-                        child: Text(habilitarEdicao ? 'Salvar' : 'Editar'),
                       ),
                       const SizedBox(width: 20),
-                      ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              habilitarEdicao = false;
-                            });
-                          },
-                          child: const Text('Cancelar')),
+                      ElevatedButton.icon(
+                        icon: const Icon(FontAwesomeIcons.xmark),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        label: const Text('Cancelar'),
+                        onPressed: () {
+                          setState(() {
+                            habilitarEdicao = false;
+                          });
+                        },
+                      ),
                     ],
                   ),
                   const SizedBox(height: 40),
@@ -193,25 +191,20 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                               'Erro ao verificar existência de empresa');
                         } else {
                           if (snapshot.data != null) {
-                            return ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(150, 50),
-                              ),
+                            return ElevatedButton.icon(
                               onPressed: () {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                    builder: (context) => ProdutoListPage(
+                                    builder: (context) => DadosEmpresaPage(
                                         empresa: snapshot.data!),
                                   ),
                                 );
                               },
-                              child: const Text('Acessar minha loja'),
+                              icon: const Icon(FontAwesomeIcons.listCheck),
+                              label: const Text('Acessar minha empresa'),
                             );
                           } else {
-                            return ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(150, 50),
-                              ),
+                            return ElevatedButton.icon(
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -220,7 +213,8 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
                                   },
                                 );
                               },
-                              child: const Text('Quero ser um vendedor'),
+                              icon: const Icon(FontAwesomeIcons.moneyCheck),
+                              label: const Text('Quero ser um vendedor'),
                             );
                           }
                         }
@@ -247,16 +241,7 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => EmpresaEditPage(
-                  empresa: Empresa(
-                    nomeFantasia: '',
-                    usuarioId: usuario.value!.id!,
-                    chavePix: '',
-                    descricao: '',
-                    logomarca: '',
-                    locaisEntrega: [],
-                    dataCadastro: Timestamp.now(),
-                    dataUltimaAlteracao: Timestamp.now(),
-                  ),
+                  empresa: Empresa.empty(usuario.value!.id!),
                 ),
               ),
             );
@@ -265,6 +250,47 @@ class DadosUsuarioState extends ConsumerState<DadosUsuario> {
         ),
         TextButton(
           onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Não'),
+        ),
+      ],
+    );
+  }
+
+  AlertDialog dialogoConfirmacaoAlteracao(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text('Alterar Dados'),
+      content: const Text('Deseja realmente confirmar as alterações?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () async {
+            Usuario novoUsuario = usuario.copyWith(
+              nomeCompleto: _nomeController.text,
+              telefone: _telefoneController.text,
+            );
+
+            await ref
+                .read(dadosUsuarioControllerProvider.notifier)
+                .atualizarUsuario(novoUsuario);
+
+            if (!context.mounted) return;
+
+            ref.invalidate(menuLateralControllerProvider);
+            ref.invalidate(dadosUsuarioControllerProvider);
+
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const MenuPrincipalPage(),
+              ),
+            );
+          },
+          child: const Text('Sim'),
+        ),
+        TextButton(
+          onPressed: () {
+            _nomeController.text = usuario.nomeCompleto;
+            _telefoneController.text = usuario.telefone;
             Navigator.of(context).pop();
           },
           child: const Text('Não'),

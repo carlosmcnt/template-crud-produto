@@ -78,12 +78,12 @@ class Tema {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      tooltipTheme: TooltipThemeData(
+      tooltipTheme: const TooltipThemeData(
         decoration: BoxDecoration(
-          color: accentColor,
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          color: Colors.grey,
+          borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
-        textStyle: const TextStyle(color: Colors.white),
+        textStyle: TextStyle(color: Colors.white),
       ),
       dialogTheme: DialogTheme(
         backgroundColor: backgroundColor,
@@ -156,6 +156,25 @@ class Tema {
           ),
         ),
       ),
+      dataTableTheme: DataTableThemeData(
+        dataTextStyle: TextStyle(
+          color: textPrimaryColor,
+          fontSize: 15,
+        ),
+        columnSpacing: 30,
+        headingTextStyle: TextStyle(
+          color: textPrimaryColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.grey,
+            width: 1,
+          ),
+        ),
+      ),
       iconTheme: IconThemeData(color: accentColor),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: accentColor,
@@ -165,19 +184,7 @@ class Tema {
     );
   }
 
-  static AppBar appBarSemVoltar() {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      centerTitle: true,
-      title: Image.asset(
-        'logo.png',
-        fit: BoxFit.cover,
-        height: 90,
-      ),
-    );
-  }
-
-  static AppBar appBar() {
+  static AppBar menuPrincipal() {
     return AppBar(
       toolbarHeight: const Size.fromHeight(70).height,
       centerTitle: true,
@@ -189,19 +196,18 @@ class Tema {
     );
   }
 
-  static Widget rodape(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      height: MediaQuery.of(context).size.height * 0.06,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Todos os direitos reservados © Pegue o Doce ${DateTime.now().year}',
-            style: const TextStyle(fontSize: 16),
-          ),
-        ],
+  static AppBar descricaoAcoes(String descricao, List<Widget> acoes) {
+    return AppBar(
+      toolbarHeight: const Size.fromHeight(70).height,
+      centerTitle: true,
+      title: Text(
+        descricao,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
+      actions: acoes,
     );
   }
 }

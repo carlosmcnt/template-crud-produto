@@ -18,11 +18,11 @@ class HistoricoPedidoController extends _$HistoricoPedidoController {
       if (isHistoricoEmpresa) {
         pedidos = await ref
             .read(pedidoServiceProvider)
-            .getPedidosPorVendedor(usuarioId!);
+            .getPedidosPorVendedor(usuarioId);
       } else {
         pedidos = await ref
             .read(pedidoServiceProvider)
-            .getPedidosPorCliente(usuarioId!);
+            .getPedidosPorCliente(usuarioId);
       }
       state = AsyncValue.data(pedidos);
       return pedidos;

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:template_crud_produto/usuario/views/login_widget.dart';
-import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/views/login_page.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_page.dart';
 
 class Roteador extends StatelessWidget {
   Roteador({super.key});
@@ -16,7 +16,7 @@ class Roteador extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else {
             if (snapshot.hasData) {
-              return const MenuPrincipalWidget();
+              return const MenuPrincipalPage();
             } else {
               return const LoginPage();
             }

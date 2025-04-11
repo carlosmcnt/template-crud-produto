@@ -1,7 +1,8 @@
 import 'package:br_validators/br_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_crud_produto/usuario/services/usuario_service.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:template_crud_produto/usuario/controllers/usuario_controller.dart';
 import 'package:template_crud_produto/utils/formatador.dart';
 import 'package:template_crud_produto/utils/validador.dart';
 
@@ -23,9 +24,8 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
   late TextEditingController _telefoneController;
   bool senhaVisivel = false;
   bool repetirSenhaVisivel = false;
-  bool autoValidate = false;
   bool desabilitarBotao = false;
-  late String nomeArquivo = 'Nenhuma foto selecionada';
+  AutovalidateMode validacaoTempoReal = AutovalidateMode.onUserInteraction;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -52,21 +52,20 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
 
   Future<void> cadastrar(BuildContext context) async {
     if (!_formKey.currentState!.validate()) {
-      setState(() => autoValidate = true);
       return;
     }
 
     setState(() => desabilitarBotao = true);
 
     bool retornoCadastro = await ref
-        .read(usuarioServiceProvider)
-        .registrar(
-          nome: _nomeController.text,
-          email: _emailController.text,
-          cpf: _cpfController.text,
-          senha: _senhaController.text,
-          telefone: _telefoneController.text,
-          context: context,
+        .read(usuarioControllerProvider.notifier)
+        .cadastrar(
+          _nomeController.text,
+          _emailController.text,
+          _cpfController.text,
+          _senhaController.text,
+          _telefoneController.text,
+          context,
         )
         .whenComplete(() {
       setState(() => desabilitarBotao = false);
@@ -164,7 +163,7 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
         TextFormField(
           controller: _nomeController,
           decoration: InputDecoration(
-            hintText: "Nome:",
+            labelText: "Nome:",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
@@ -185,18 +184,18 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
         TextFormField(
           controller: _emailController,
           decoration: InputDecoration(
-            hintText: "E-mail:",
+            labelText: "E-mail:",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.email),
+            prefixIcon: const Icon(FontAwesomeIcons.at),
           ),
+          autovalidateMode: validacaoTempoReal,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Por favor, informe o e-mail';
             }
-            if (!Validador().emailValido(value)) {
+            if (!Validador.emailValido(value)) {
               return 'Por favor, informe um e-mail válido';
             }
             return null;
@@ -206,17 +205,15 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
         TextFormField(
           controller: _cpfController,
           keyboardType: TextInputType.number,
-          inputFormatters: [
-            BRMasks.cpf,
-          ],
+          maxLength: 11,
           decoration: InputDecoration(
-            hintText: "CPF:",
+            labelText: "CPF:",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.numbers),
+            prefixIcon: const Icon(FontAwesomeIcons.idCard),
           ),
+          autovalidateMode: validacaoTempoReal,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Por favor, informe o CPF corretamente';
@@ -232,15 +229,14 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
           controller: _senhaController,
           obscureText: !senhaVisivel,
           decoration: InputDecoration(
-            hintText: "Senha:",
+            labelText: "Senha:",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.password),
+            prefixIcon: const Icon(FontAwesomeIcons.lock),
             suffixIcon: IconButton(
               icon: Icon(
-                senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                senhaVisivel ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
@@ -250,9 +246,13 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
               },
             ),
           ),
+          autovalidateMode: validacaoTempoReal,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Por favor, informe a senha';
+            }
+            if (!Validador.validarSenhaForte(value)) {
+              return 'A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos';
             }
             return null;
           },
@@ -262,18 +262,17 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
           controller: _repetirSenhaController,
           obscureText: !repetirSenhaVisivel,
           decoration: InputDecoration(
-            hintText: "Confirme a senha:",
+            labelText: "Confirme a senha:",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.password),
+            prefixIcon: const Icon(FontAwesomeIcons.lock),
           ),
+          autovalidateMode: validacaoTempoReal,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Por favor, repita a senha';
-            }
-            if (value != _senhaController.text) {
+            } else if (value != _senhaController.text) {
               return 'As senhas não conferem';
             }
             return null;
@@ -283,36 +282,37 @@ class CadastroPageState extends ConsumerState<CadastroPage> {
         TextFormField(
           controller: _telefoneController,
           keyboardType: TextInputType.phone,
-          inputFormatters: [
-            BRMasks.mobilePhone,
-          ],
+          maxLength: 11,
           decoration: InputDecoration(
-            hintText: "Telefone:",
+            labelText: "Telefone (com DDD):",
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
             prefixIcon: const Icon(Icons.phone),
           ),
+          autovalidateMode: validacaoTempoReal,
           validator: (value) {
-            if (value == null || value.isEmpty || value.length < 14) {
-              return 'Por favor, informe o telefone corretamente';
+            if (value == null || value.isEmpty) {
+              return 'Por favor, informe o telefone';
+            }
+            if (!BRValidators.validateMobileNumber(
+                Validador.aplicarMascaraTelefoneComDDD(value))) {
+              return 'Por favor, informe um telefone válido';
             }
             return null;
           },
         ),
         const SizedBox(height: 20),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            shape: const StadiumBorder(),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          onPressed: desabilitarBotao ? null : () => cadastrar(context),
-          label: const Text('Cadastrar',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-          icon: const Icon(Icons.login),
+        ElevatedButton(
+          onPressed: () => cadastrar(context),
+          child: desabilitarBotao
+              ? const CircularProgressIndicator()
+              : const Text(
+                  "Cadastrar",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
         ),
       ],
     );

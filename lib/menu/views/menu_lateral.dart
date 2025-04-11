@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:template_crud_produto/empresa/models/empresa.dart';
 import 'package:template_crud_produto/empresa/views/dados_empresa.dart';
 import 'package:template_crud_produto/menu/controllers/menu_lateral_controller.dart';
-import 'package:template_crud_produto/menu/views/dados_usuario.dart';
-import 'package:template_crud_produto/menu/views/empresa_favorita.dart';
+import 'package:template_crud_produto/menu/views/configuracao_page.dart';
+import 'package:template_crud_produto/menu/views/empresa_favorita_page.dart';
+import 'package:template_crud_produto/pedido/views/carrinho_page.dart';
 import 'package:template_crud_produto/pedido/views/historico_pedido_page.dart';
 import 'package:template_crud_produto/usuario/models/usuario.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
-import 'package:template_crud_produto/usuario/views/login_widget.dart';
-import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/views/login_page.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_page.dart';
 
 class MenuLateralWidget extends ConsumerStatefulWidget {
   const MenuLateralWidget({super.key});
@@ -65,20 +67,20 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home),
+            leading: const Icon(FontAwesomeIcons.house),
             title: const Text("Início"),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const MenuPrincipalWidget(),
+                builder: (context) => const MenuPrincipalPage(),
               ));
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text("Meus dados"),
+            leading: const Icon(FontAwesomeIcons.gear),
+            title: const Text("Minhas configurações"),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DadosUsuario(
+                  builder: (context) => ConfiguracaoPage(
                         usuario: Usuario(
                           nomeCompleto: usuario!.nomeCompleto,
                           email: usuario.email,
@@ -101,7 +103,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
                 return const SizedBox.shrink();
               } else {
                 return ListTile(
-                  leading: const Icon(Icons.store),
+                  leading: const Icon(FontAwesomeIcons.building),
                   title: const Text("Perfil Empresa"),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
@@ -114,7 +116,7 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.list_alt),
+            leading: const Icon(FontAwesomeIcons.clockRotateLeft),
             title: const Text("Histórico de pedidos"),
             onTap: () {
               Navigator.of(context).pushReplacement(
@@ -126,18 +128,29 @@ class MenuLateralWidgetState extends ConsumerState<MenuLateralWidget> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.favorite),
+            leading: const Icon(FontAwesomeIcons.heartPulse),
             title: const Text("Empresas favoritas"),
             onTap: () {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => const EmpresaFavorita(),
+                  builder: (context) => const EmpresaFavoritaPage(),
                 ),
               );
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(FontAwesomeIcons.cartShopping),
+            title: const Text("Carrinho"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CarrinhoPage(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(FontAwesomeIcons.rightFromBracket),
             title: const Text("Sair"),
             onTap: () {
               showDialog(

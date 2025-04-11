@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:template_crud_produto/menu/controllers/dados_usuario_controller.dart';
 import 'package:template_crud_produto/pedido/controllers/historico_pedido_controller.dart';
+import 'package:template_crud_produto/usuario/controllers/usuario_controller.dart';
 import 'package:template_crud_produto/usuario/services/usuario_service.dart';
-import 'package:template_crud_produto/usuario/views/cadastro_widget.dart';
-import 'package:template_crud_produto/usuario/views/menu_principal_widget.dart';
+import 'package:template_crud_produto/usuario/views/cadastro_page.dart';
+import 'package:template_crud_produto/usuario/views/menu_principal_page.dart';
 import 'package:template_crud_produto/produto/controllers/produto_list_controller.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -40,20 +43,22 @@ class LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
-    bool retornoLogin = await ref.read(usuarioServiceProvider).login(
-          _emailController.text.trim(),
-          _senhaController.text.trim(),
-          context,
-        );
+    bool retornoLogin =
+        await ref.read(usuarioControllerProvider.notifier).login(
+              _emailController.text.trim(),
+              _senhaController.text.trim(),
+              context,
+            );
 
     if (!context.mounted) return;
 
     if (retornoLogin) {
       ref.invalidate(produtoListControllerProvider);
       ref.invalidate(historicoPedidoControllerProvider);
+      ref.invalidate(dadosUsuarioControllerProvider);
 
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => const MenuPrincipalWidget(),
+        builder: (context) => const MenuPrincipalPage(),
       ));
     }
   }
@@ -125,8 +130,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
           await ref
               .read(usuarioServiceProvider)
               .redefinirSenha(_emailController.text.trim(), context);
-
-          if (!context.mounted) return;
         },
         child: const Text('Esqueceu a senha? Preencha seu e-mail e clique aqui',
             textAlign: TextAlign.center),
@@ -168,12 +171,11 @@ class LoginPageState extends ConsumerState<LoginPage> {
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
-            hintText: "E-mail:",
+            labelText: "E-mail:",
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.email_outlined),
+            prefixIcon: const Icon(FontAwesomeIcons.at),
           ),
         ),
         const SizedBox(height: 10),
@@ -181,12 +183,11 @@ class LoginPageState extends ConsumerState<LoginPage> {
           controller: _senhaController,
           obscureText: !senhaVisivel,
           decoration: InputDecoration(
-            hintText: "Senha:",
+            labelText: "Senha:",
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
-            filled: true,
-            prefixIcon: const Icon(Icons.password),
+            prefixIcon: const Icon(FontAwesomeIcons.unlock),
             suffixIcon: IconButton(
               icon: Icon(
                 senhaVisivel ? Icons.visibility : Icons.visibility_off,
@@ -200,22 +201,13 @@ class LoginPageState extends ConsumerState<LoginPage> {
           ),
         ),
         const SizedBox(height: 15),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            shape: const StadiumBorder(),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          onPressed: () async {
-            await realizarLogin(context);
+        ElevatedButton(
+          onPressed: () {
+            realizarLogin(context);
           },
-          label: const Text(
-            'Entrar',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          icon: const Icon(
-            Icons.login,
+          child: const Text(
+            "Entrar",
+            style: TextStyle(fontSize: 16),
           ),
         ),
         const SizedBox(height: 30),
